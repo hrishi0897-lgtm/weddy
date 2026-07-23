@@ -61,24 +61,44 @@
     }
     .loki-char.dot { color: var(--yellow); }
 
-    /* Centered Glass Header */
+    /* Glass Header with Centered Brand & Top-Right Search Button */
     header { 
       display: flex; 
-      justify-content: center; 
+      justify-content: space-between; 
       align-items: center; 
       margin-bottom: 20px;
-      padding: 14px 16px;
+      padding: 12px 16px;
       background: var(--glass-bg);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid var(--glass-border);
       border-radius: var(--card-radius);
       box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      position: relative;
     }
-    .brand { font-size: 1.6rem; font-weight: 900; letter-spacing: -0.5px; color: var(--text); text-align: center; }
+    .brand { font-size: 1.6rem; font-weight: 900; letter-spacing: -0.5px; color: var(--text); flex: 1; text-align: center; margin-left: 42px; }
     .brand span { color: var(--yellow); }
 
-    /* Glass Search Bar with Button */
+    .nav-search-btn {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      color: var(--yellow);
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: transform 0.2s ease, background 0.2s ease;
+      padding: 0;
+    }
+    .nav-search-btn:active { transform: scale(0.9); background: rgba(234, 179, 8, 0.15); }
+    .nav-search-btn svg { width: 20px; height: 20px; stroke: var(--yellow); stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* Glass Search Bar */
     .search-box { 
       margin-bottom: 20px; 
       display: flex;
@@ -147,7 +167,7 @@
       transform: translateY(-2px);
     }
 
-    /* Status Filter Sub-Bar */
+    /* Status Subtabs */
     .status-subtabs { display: flex; gap: 6px; margin-bottom: 24px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
     .status-subtabs::-webkit-scrollbar { display: none; }
     .subtab {
@@ -279,12 +299,12 @@
     
     .section-title { font-size: 1.05rem; font-weight: 900; color: var(--yellow); margin: 24px 0 14px 0; text-transform: uppercase; letter-spacing: 0.5px; }
 
-    /* TALLER VERTICAL RECOMMENDATIONS */
+    /* Vertically Longer Recommendations Cards */
     .recommendations-row { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 14px; margin-bottom: 20px; scrollbar-width: none; }
     .recommendations-row::-webkit-scrollbar { display: none; }
-    .rec-card { flex: 0 0 135px; background: var(--glass-bg); border-radius: 16px; overflow: hidden; border: 1px solid var(--glass-border); cursor: pointer; transition: transform 0.2s ease; display: flex; flex-direction: column; }
+    .rec-card { flex: 0 0 140px; background: var(--glass-bg); border-radius: 16px; overflow: hidden; border: 1px solid var(--glass-border); cursor: pointer; transition: transform 0.2s ease; display: flex; flex-direction: column; }
     .rec-card:active { transform: scale(0.95); }
-    .rec-card img { width: 100%; height: 190px; object-fit: cover; display: block; }
+    .rec-card img { width: 100%; height: 220px; object-fit: cover; display: block; }
     .rec-title { font-size: 0.75rem; font-weight: 800; padding: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #fff; }
 
     .action-group { display: flex; flex-direction: column; gap: 10px; }
@@ -295,7 +315,7 @@
     .btn-status-option.active { border-color: var(--yellow); color: var(--yellow); background: rgba(234, 179, 8, 0.1); }
     .btn-delete { width: 100%; padding: 14px; border-radius: 14px; border: none; background: rgba(239, 68, 68, 0.85); color: #fff; font-weight: 800; cursor: pointer; margin-top: 10px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
 
-    /* Compact & Non-Overlapping Search Results Grid */
+    /* Compact Search Results Grid */
     .search-results-grid { 
       display: grid; 
       grid-template-columns: repeat(auto-fill, minmax(95px, 1fr)); 
@@ -305,6 +325,7 @@
       position: relative; 
       z-index: 10; 
       min-height: 200px; 
+      padding-bottom: 40px;
     }
     .result-card { background: var(--glass-card); border-radius: var(--card-radius); overflow: hidden; border: 1px solid var(--glass-border); cursor: pointer; display: flex; flex-direction: column; position: relative; transition: transform 0.2s ease; }
     .result-card:active { transform: scale(0.95); }
@@ -313,9 +334,6 @@
     .result-title { font-size: 0.75rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .result-meta { font-size: 0.65rem; color: var(--text-muted); }
     .type-badge { position: absolute; top: 6px; left: 6px; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); color: var(--yellow); font-size: 0.55rem; font-weight: 800; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; border: 1px solid rgba(234, 179, 8, 0.3); }
-
-    .load-more-container { text-align: center; margin: 24px 0 30px 0; }
-    .btn-load-more { background: var(--glass-bg); border: 1px solid var(--yellow); color: var(--yellow); padding: 14px 30px; border-radius: 14px; font-weight: 800; font-size: 0.9rem; cursor: pointer; width: 100%; max-width: 300px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
   </style>
 </head>
 <body>
@@ -334,6 +352,9 @@
 
   <header>
     <div class="brand">WOODY<span>.</span></div>
+    <button class="nav-search-btn" onclick="focusMainSearch()" aria-label="Search">
+      <svg viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+    </button>
   </header>
 
   <div class="search-box">
@@ -369,7 +390,9 @@
         <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
       </button>
       <div style="font-weight: 900; font-size: 1.1rem; color: var(--yellow);" id="searchTitleText">SEARCHING...</div>
-      <div style="width: 44px;"></div>
+      <button class="nav-search-btn" onclick="focusMainSearchFromOverlay()" aria-label="Search">
+        <svg viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      </button>
     </div>
 
     <!-- Search Filters -->
@@ -399,9 +422,6 @@
     </div>
 
     <div class="search-results-grid" id="searchResultsGrid"></div>
-    <div class="load-more-container" id="loadMoreContainer" style="display: none;">
-      <button class="btn-load-more" id="loadMoreBtn" onclick="loadMoreResults()">Load More Results</button>
-    </div>
   </div>
 
   <!-- Universal Fullscreen Details View -->
@@ -411,7 +431,9 @@
         <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
       </button>
       <div style="font-weight: 900; font-size: 1.1rem; color: var(--yellow);" id="detailHeaderTitle">DETAILS</div>
-      <div style="width: 44px;"></div>
+      <button class="nav-search-btn" onclick="focusMainSearchFromOverlay()" aria-label="Search">
+        <svg viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      </button>
     </div>
     <img id="mPoster" class="detail-poster" src="" alt="Poster">
     <div id="mTitle" class="detail-title">Title</div>
@@ -431,7 +453,9 @@
   </div>
 
   <script>
-    // Loki-Style Decelerating Font Shift Script
+    const TMDB_API_KEY = "3fd2be6f0c70a2a598f084dd27581c3d";
+
+    // Loki-Style Decelerating Font Shift
     const fonts = ["'Cinzel', serif", "'Space Grotesk', sans-serif", "'Playfair Display', serif", "'Outfit', sans-serif", "'Cinzel Decorative', cursive"];
     const chars = document.querySelectorAll('.loki-char');
 
@@ -439,7 +463,7 @@
       chars.forEach((char, index) => {
         let speed = 70;
         let count = 0;
-        const maxShifts = 15 + index * 4; // Each character stops one after another
+        const maxShifts = 15 + index * 4;
 
         function shiftFont() {
           const randomFont = fonts[Math.floor(Math.random() * fonts.length)];
@@ -447,14 +471,13 @@
           count++;
 
           if (count < maxShifts) {
-            speed += 12; // Gradually slow down interval time
+            speed += 12;
             setTimeout(shiftFont, speed);
           }
         }
         shiftFont();
       });
 
-      // Fade out screen after animation completes
       setTimeout(() => {
         const splash = document.getElementById('splashScreen');
         splash.style.opacity = '0';
@@ -469,9 +492,20 @@
     let currentStatusFilter = "all";
     
     let currentSearchQuery = "";
-    let currentPage = 1;
     let rawSearchResults = [];
     let activeMediaDetail = null;
+
+    function focusMainSearch() {
+      const input = document.getElementById("movieInput");
+      input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      input.focus();
+    }
+
+    function focusMainSearchFromOverlay() {
+      closeMediaDetailOverlay();
+      closeSearchOverlay();
+      focusMainSearch();
+    }
 
     document.getElementById("movieInput").addEventListener("keypress", function(e) {
       if (e.key === "Enter") {
@@ -549,41 +583,79 @@
       render();
     }
 
-    async function initiateSearch(query) {
-      currentSearchQuery = query;
-      currentPage = 1;
-      rawSearchResults = [];
-      document.getElementById("searchResultsGrid").innerHTML = "<div style='grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;'>Searching titles...</div>";
-      document.getElementById("searchTitleText").textContent = `RESULTS FOR "${query.toUpperCase()}"`;
-      document.getElementById("searchOverlay").style.display = "flex";
-
-      await fetchSearchResults();
+    /* Auto Spell Checker & Query Cleanup */
+    function sanitizeAndSpellCheckQuery(query) {
+      let cleaned = query.trim().toLowerCase();
+      // Common typo corrections map
+      const corrections = {
+        "avengrs": "avengers",
+        "avengars": "avengers",
+        "spidreman": "spider-man",
+        "spiderman": "spider-man",
+        "batman": "the batman",
+        "thorr": "thor",
+        "narutoo": "naruto",
+        "jujutso": "jujutsu kaisen",
+        "onepiece": "one piece"
+      };
+      return corrections[cleaned] || query;
     }
 
-    async function fetchSearchResults() {
+    async function initiateSearch(rawQuery) {
+      const correctedQuery = sanitizeAndSpellCheckQuery(rawQuery);
+      currentSearchQuery = correctedQuery;
+      rawSearchResults = [];
+
+      document.getElementById("searchResultsGrid").innerHTML = "<div style='grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;'>Searching database...</div>";
+      document.getElementById("searchTitleText").textContent = `RESULTS FOR "${correctedQuery.toUpperCase()}"`;
+      document.getElementById("searchOverlay").style.display = "flex";
+
+      await fetchSearchResults(correctedQuery);
+    }
+
+    /* DUAL-ENGINE SEARCH SYSTEM (TMDB + OMDB Fallback) */
+    async function fetchSearchResults(query) {
+      let results = [];
+
       try {
-        const res = await fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(currentSearchQuery)}&page=${currentPage}&apikey=trilogy`);
-        const data = await res.json();
+        // Engine 1: TMDB (Extensive 700k+ library)
+        const tmdbRes = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}`);
+        const tmdbData = await tmdbRes.json();
 
-        if (data && data.Search && data.Search.length > 0) {
-          const photoOnlyResults = data.Search.filter(m => m.Poster && m.Poster !== "N/A" && m.Poster.startsWith("http"));
-          
-          rawSearchResults = [...rawSearchResults, ...photoOnlyResults];
-          applySearchFilters();
-
-          const loadedCount = currentPage * 10;
-          const totalResults = parseInt(data.totalResults) || 0;
-          if (loadedCount < totalResults) {
-            document.getElementById("loadMoreContainer").style.display = "block";
-          } else {
-            document.getElementById("loadMoreContainer").style.display = "none";
-          }
-        } else if (currentPage === 1) {
-          document.getElementById("searchResultsGrid").innerHTML = "<div style='grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;'>No results with posters found.</div>";
-          document.getElementById("loadMoreContainer").style.display = "none";
+        if (tmdbData.results && tmdbData.results.length > 0) {
+          results = tmdbData.results
+            .filter(item => item.poster_path) // Strictly require poster
+            .map(item => ({
+              imdbID: item.id.toString(),
+              Title: item.title || item.name,
+              Poster: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
+              Year: (item.release_date || item.first_air_date || "2024").substring(0, 4),
+              Type: item.media_type === "tv" ? "series" : "movie"
+            }));
         }
       } catch (e) {
-        console.error(e);
+        console.warn("TMDB engine fallback active.");
+      }
+
+      // Engine 2: OMDb Fallback if TMDB has no matches
+      if (results.length === 0) {
+        try {
+          const omdbRes = await fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(query)}&apikey=trilogy`);
+          const omdbData = await omdbRes.json();
+
+          if (omdbData && omdbData.Search && omdbData.Search.length > 0) {
+            results = omdbData.Search.filter(m => m.Poster && m.Poster !== "N/A" && m.Poster.startsWith("http"));
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      if (results.length > 0) {
+        rawSearchResults = results;
+        applySearchFilters();
+      } else {
+        document.getElementById("searchResultsGrid").innerHTML = "<div style='grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;'>No matching titles found. Try checking your spelling.</div>";
       }
     }
 
@@ -615,7 +687,7 @@
       resultsGrid.innerHTML = "";
 
       if (results.length === 0) {
-        resultsGrid.innerHTML = "<div style='grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;'>No matching titles with posters found.</div>";
+        resultsGrid.innerHTML = "<div style='grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;'>No titles matching selected filters.</div>";
         return;
       }
 
@@ -637,14 +709,6 @@
       });
     }
 
-    async function loadMoreResults() {
-      currentPage++;
-      const btn = document.getElementById("loadMoreBtn");
-      btn.textContent = "Loading...";
-      await fetchSearchResults();
-      btn.textContent = "Load More Results";
-    }
-
     async function openSearchMediaDetail(id, title, poster, year, type = "movie") {
       document.getElementById("detailHeaderTitle").textContent = "PREVIEW";
       
@@ -654,13 +718,24 @@
       let director = "N/A";
 
       try {
-        const res = await fetch(`https://www.omdbapi.com/?i=${id}&apikey=trilogy`);
-        const details = await res.json();
-        if (details && details.Response !== "False") {
-          rating = (details.imdbRating && details.imdbRating !== "N/A") ? details.imdbRating : "7.5";
-          overview = details.Plot || overview;
-          genre = details.Genre !== "N/A" ? details.Genre.split(",")[0] : "Entertainment";
-          director = details.Director || director;
+        // Try fetching TMDB details first
+        const tmdbRes = await fetch(`https://api.themoviedb.org/3/${type.toLowerCase() === "series" ? "tv" : "movie"}/${id}?api_key=${TMDB_API_KEY}`);
+        const tmdbDetails = await tmdbRes.json();
+
+        if (tmdbDetails && tmdbDetails.overview) {
+          rating = tmdbDetails.vote_average ? tmdbDetails.vote_average.toFixed(1) : "7.5";
+          overview = tmdbDetails.overview;
+          genre = tmdbDetails.genres && tmdbDetails.genres.length > 0 ? tmdbDetails.genres[0].name : "Entertainment";
+        } else {
+          // Fallback to OMDb
+          const omdbRes = await fetch(`https://www.omdbapi.com/?i=${id}&apikey=trilogy`);
+          const omdbDetails = await omdbRes.json();
+          if (omdbDetails && omdbDetails.Response !== "False") {
+            rating = (omdbDetails.imdbRating && omdbDetails.imdbRating !== "N/A") ? omdbDetails.imdbRating : "7.5";
+            overview = omdbDetails.Plot || overview;
+            genre = omdbDetails.Genre !== "N/A" ? omdbDetails.Genre.split(",")[0] : "Entertainment";
+            director = omdbDetails.Director || director;
+          }
         }
       } catch (e) {}
 
@@ -744,6 +819,7 @@
       document.getElementById("movieInput").value = "";
     }
 
+    /* SHUFFLED DYNAMIC RECOMMENDATIONS ENGINE */
     async function fetchRecommendations(genre, currentTitle) {
       const recRow = document.getElementById("recommendationsRow");
       recRow.innerHTML = "<div style='color: var(--text-muted); font-size: 0.8rem;'>Loading suggestions...</div>";
@@ -751,18 +827,31 @@
       const queryKeyword = (genre && genre !== "Entertainment" && genre !== "N/A") ? genre : currentTitle.split(" ")[0];
 
       try {
-        const res = await fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(queryKeyword)}&apikey=trilogy`);
+        const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(queryKeyword)}`);
         const data = await res.json();
 
-        if (data && data.Search && data.Search.length > 0) {
+        if (data && data.results && data.results.length > 0) {
           recRow.innerHTML = "";
-          data.Search.filter(m => m.Title !== currentTitle && m.Poster && m.Poster !== "N/A" && m.Poster.startsWith("http")).slice(0, 6).forEach(m => {
+          
+          let candidates = data.results.filter(m => (m.title || m.name) !== currentTitle && m.poster_path);
+          
+          // Fisher-Yates Random Shuffle
+          for (let i = candidates.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
+          }
+
+          candidates.slice(0, 6).forEach(m => {
             const recCard = document.createElement("div");
             recCard.className = "rec-card";
-            recCard.onclick = () => openSearchMediaDetail(m.imdbID, m.Title, m.Poster, m.Year, m.Type);
+            const titleStr = m.title || m.name;
+            const posterUrl = `https://image.tmdb.org/t/p/w500${m.poster_path}`;
+            const yearStr = (m.release_date || m.first_air_date || "2024").substring(0, 4);
+
+            recCard.onclick = () => openSearchMediaDetail(m.id.toString(), titleStr, posterUrl, yearStr, m.media_type);
             recCard.innerHTML = `
-              <img src="${m.Poster}" alt="${m.Title}">
-              <div class="rec-title">${m.Title}</div>
+              <img src="${posterUrl}" alt="${titleStr}">
+              <div class="rec-title">${titleStr}</div>
             `;
             recRow.appendChild(recCard);
           });
