@@ -182,7 +182,7 @@
       transform: translateY(-2px);
     }
 
-    /* Status Filter Sub-Bar (In-Page Navigation) */
+    /* Status Filter Sub-Bar */
     .status-subtabs { display: flex; gap: 6px; margin-bottom: 24px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
     .status-subtabs::-webkit-scrollbar { display: none; }
     .subtab {
@@ -206,11 +206,11 @@
       background: rgba(234, 179, 8, 0.1);
     }
 
-    /* Search Control Container */
+    /* Search Filter Container */
     .search-filter-container {
       position: relative;
       z-index: 20;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
       padding-bottom: 4px;
     }
     .search-filter-bar {
@@ -265,7 +265,7 @@
       left: 0; 
       width: 100vw; 
       height: 100vh; 
-      background: rgba(7, 9, 14, 0.94); 
+      background: rgba(7, 9, 14, 0.95); 
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
       z-index: 1000; 
@@ -284,7 +284,6 @@
 
     .fs-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; position: relative; z-index: 30; }
     
-    /* Styled Bold Back Arrow Button */
     .back-btn { 
       background: var(--glass-bg); 
       border: 1px solid var(--glass-border); 
@@ -304,7 +303,22 @@
     .back-btn:active { transform: scale(0.9); background: rgba(234, 179, 8, 0.15); }
     .back-btn svg { width: 22px; height: 22px; stroke: var(--yellow); stroke-width: 3.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 
-    /* Media Details Glass Content */
+    /* OTT Platform Box Styling */
+    .ott-box { 
+      background: var(--glass-bg); 
+      border: 1px solid var(--glass-border); 
+      padding: 14px 18px; 
+      border-radius: 16px; 
+      margin-bottom: 18px; 
+      text-align: center; 
+      backdrop-filter: blur(12px); 
+      -webkit-backdrop-filter: blur(12px); 
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3); 
+    }
+    .ott-title { font-size: 0.75rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.5px; }
+    .ott-value { font-size: 0.95rem; color: var(--yellow); font-weight: 800; }
+
+    /* Media Details Content */
     .detail-poster { width: 100%; max-width: 240px; aspect-ratio: 2/3; object-fit: cover; border-radius: 20px; margin: 0 auto 20px auto; border: 2px solid var(--yellow); display: block; box-shadow: 0 12px 32px rgba(0,0,0,0.8), 0 0 20px var(--glass-glow); }
     .detail-title { font-size: 1.6rem; font-weight: 900; margin-bottom: 6px; text-align: center; letter-spacing: -0.5px; }
     .detail-meta { font-size: 0.95rem; color: var(--yellow); font-weight: 800; text-align: center; margin-bottom: 14px; }
@@ -331,15 +345,24 @@
     .btn-status-option.active { border-color: var(--yellow); color: var(--yellow); background: rgba(234, 179, 8, 0.1); }
     .btn-delete { width: 100%; padding: 14px; border-radius: 14px; border: none; background: rgba(239, 68, 68, 0.85); color: #fff; font-weight: 800; cursor: pointer; margin-top: 10px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
 
-    /* Search Results Grid */
-    .search-results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 14px; margin-top: 8px; align-items: start; position: relative; z-index: 10; min-height: 200px; }
+    /* Compact & Non-Overlapping Search Results Grid */
+    .search-results-grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fill, minmax(95px, 1fr)); 
+      gap: 12px; 
+      margin-top: 10px; 
+      align-items: start; 
+      position: relative; 
+      z-index: 10; 
+      min-height: 200px; 
+    }
     .result-card { background: var(--glass-card); border-radius: var(--card-radius); overflow: hidden; border: 1px solid var(--glass-border); cursor: pointer; display: flex; flex-direction: column; position: relative; transition: transform 0.2s ease; }
     .result-card:active { transform: scale(0.95); }
     .result-card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; display: block; }
-    .result-info { padding: 8px; }
-    .result-title { font-size: 0.8rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .result-meta { font-size: 0.7rem; color: var(--text-muted); }
-    .type-badge { position: absolute; top: 6px; left: 6px; background: rgba(0,0,0,0.8); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); color: var(--yellow); font-size: 0.6rem; font-weight: 800; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; border: 1px solid rgba(234, 179, 8, 0.3); }
+    .result-info { padding: 6px 8px 8px 8px; }
+    .result-title { font-size: 0.75rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .result-meta { font-size: 0.65rem; color: var(--text-muted); }
+    .type-badge { position: absolute; top: 6px; left: 6px; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); color: var(--yellow); font-size: 0.55rem; font-weight: 800; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; border: 1px solid rgba(234, 179, 8, 0.3); }
 
     .load-more-container { text-align: center; margin: 24px 0 30px 0; }
     .btn-load-more { background: var(--glass-bg); border: 1px solid var(--yellow); color: var(--yellow); padding: 14px 30px; border-radius: 14px; font-weight: 800; font-size: 0.9rem; cursor: pointer; width: 100%; max-width: 300px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
@@ -431,7 +454,7 @@
     </div>
   </div>
 
-  <!-- Universal Fullscreen Details View (Cleaned - No OTT) -->
+  <!-- Universal Fullscreen Details View -->
   <div class="fullscreen-view" id="mediaDetailOverlay" style="z-index: 1100;">
     <div class="fs-header">
       <button class="back-btn" onclick="closeMediaDetailOverlay()" aria-label="Back">
@@ -449,6 +472,12 @@
       <span class="tag" id="mDirector">Director: N/A</span>
     </div>
 
+    <!-- Official Streaming Availability -->
+    <div class="ott-box">
+      <div class="ott-title">Official Streaming Availability</div>
+      <div class="ott-value" id="mOtt">Checking live streaming providers...</div>
+    </div>
+
     <div id="mDesc" class="detail-desc">Description</div>
     
     <div class="action-group" id="actionGroup"></div>
@@ -458,13 +487,14 @@
   </div>
 
   <script>
-    // Loki Intro Timer
+    const TMDB_API_KEY = "3fd2be6f0c70a2a598f084dd27581c3d";
+
     window.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         const splash = document.getElementById('splashScreen');
         splash.style.opacity = '0';
         setTimeout(() => splash.style.visibility = 'hidden', 500);
-      }, 1800);
+      }, 1600);
     });
 
     let library = JSON.parse(localStorage.getItem("my_movies") || "[]");
@@ -550,6 +580,47 @@
       document.querySelectorAll('.status-subtabs .subtab').forEach(t => t.classList.remove('active'));
       el.classList.add('active');
       render();
+    }
+
+    /* REAL-TIME LEGAL OTT FETCHING VIA OFFICIAL TMDB WATCH PROVIDERS API */
+    async function fetchAccurateOtt(title) {
+      const ottEl = document.getElementById("mOtt");
+      ottEl.textContent = "Checking streaming availability...";
+
+      try {
+        const searchRes = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(title)}`);
+        const searchData = await searchRes.json();
+
+        if (searchData.results && searchData.results.length > 0) {
+          const item = searchData.results[0];
+          const mediaType = item.media_type === "tv" ? "tv" : "movie";
+
+          const providerRes = await fetch(`https://api.themoviedb.org/3/${mediaType}/${item.id}/watch/providers?api_key=${TMDB_API_KEY}`);
+          const providerData = await providerRes.json();
+
+          const results = providerData.results || {};
+          // Check India region first, then US / Global
+          const regionData = results.IN || results.US || results.GB;
+
+          if (regionData && regionData.flatrate && regionData.flatrate.length > 0) {
+            const providers = regionData.flatrate.map(p => p.provider_name).join(" • ");
+            ottEl.textContent = `Streaming on ${providers}`;
+            ottEl.style.color = "var(--yellow)";
+            return;
+          } else if (regionData && regionData.rent && regionData.rent.length > 0) {
+            const rentProviders = regionData.rent.map(p => p.provider_name).slice(0, 2).join(" • ");
+            ottEl.textContent = `Rent/Buy on ${rentProviders}`;
+            ottEl.style.color = "var(--yellow)";
+            return;
+          }
+        }
+        
+        ottEl.textContent = "Unfortunately not available for legal streaming";
+        ottEl.style.color = "#94a3b8";
+      } catch (e) {
+        ottEl.textContent = "Unfortunately not available for legal streaming";
+        ottEl.style.color = "#94a3b8";
+      }
     }
 
     async function initiateSearch(query) {
@@ -671,6 +742,7 @@
       activeMediaDetail = { id, title, poster, year, type: type.toUpperCase(), rating, overview, genre, director, status: "watchlist" };
 
       displayDetailOverlay();
+      fetchAccurateOtt(title);
 
       const actionGroup = document.getElementById("actionGroup");
       const isAlreadySaved = library.some(item => item.id === id);
@@ -691,6 +763,7 @@
       activeMediaDetail = { ...item };
 
       displayDetailOverlay();
+      fetchAccurateOtt(item.title);
       renderHomeActionGroup(index);
       fetchRecommendations(item.genre || "Movie", item.title);
     }
