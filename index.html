@@ -13,29 +13,38 @@
       --text: #f5f5f5;
       --text-muted: #a3a3a3;
       --border: #262626;
+      --green: #22c55e;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
     body { background: var(--bg); color: var(--text); min-height: 100vh; padding: 16px; }
 
     /* Header */
-    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
     .brand { font-size: 1.3rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--text); }
     .brand span { color: var(--yellow); }
     .count-badge { background: var(--card-bg); border: 1px solid var(--border); color: var(--yellow); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
 
     /* Search Bar */
-    .search-box { display: flex; gap: 8px; margin-bottom: 24px; }
+    .search-box { display: flex; gap: 8px; margin-bottom: 16px; }
     input { flex: 1; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border); background: var(--card-bg); color: #fff; font-size: 0.95rem; outline: none; }
     input:focus { border-color: var(--yellow); }
     .btn-main { padding: 14px 20px; border-radius: 12px; border: none; background: var(--yellow); color: #000; font-weight: 700; font-size: 0.95rem; cursor: pointer; }
     .btn-main:active { background: var(--yellow-hover); }
+
+    /* Filter Tabs */
+    .filter-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+    .tab { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-muted); font-size: 0.85rem; font-weight: 700; cursor: pointer; text-align: center; }
+    .tab.active { background: var(--yellow); color: #000; border-color: var(--yellow); }
 
     /* Grid */
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 12px; }
     .card { position: relative; border-radius: 12px; overflow: hidden; background: var(--card-bg); aspect-ratio: 2/3; border: 1px solid var(--border); cursor: pointer; }
     .card img { width: 100%; height: 100%; object-fit: cover; }
     .card-rating { position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.85); color: var(--yellow); padding: 2px 6px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; border: 1px solid rgba(234, 179, 8, 0.3); }
+    .card-status { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.85); padding: 3px 6px; border-radius: 6px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; }
+    .status-watched { color: var(--green); border: 1px solid rgba(34, 197, 94, 0.4); }
+    .status-towatch { color: var(--yellow); border: 1px solid rgba(234, 179, 8, 0.4); }
 
     .empty { text-align: center; color: var(--text-muted); margin-top: 60px; font-size: 0.95rem; line-height: 1.5; }
 
@@ -46,20 +55,34 @@
     .back-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--yellow); width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 
     /* Detail View Content */
-    .detail-poster { width: 100%; max-width: 260px; aspect-ratio: 2/3; object-fit: cover; border-radius: 16px; margin: 0 auto 20px auto; border: 2px solid var(--yellow); display: block; }
-    .detail-title { font-size: 1.6rem; font-weight: 800; margin-bottom: 8px; text-align: center; }
-    .detail-meta { font-size: 0.95rem; color: var(--yellow); font-weight: 700; text-align: center; margin-bottom: 16px; }
-    .detail-desc { font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 30px; background: var(--card-bg); padding: 16px; border-radius: 12px; border: 1px solid var(--border); }
-    .btn-delete { width: 100%; padding: 14px; border-radius: 12px; border: none; background: #ef4444; color: #fff; font-weight: 700; cursor: pointer; margin-top: auto; }
+    .detail-poster { width: 100%; max-width: 240px; aspect-ratio: 2/3; object-fit: cover; border-radius: 16px; margin: 0 auto 16px auto; border: 2px solid var(--yellow); display: block; }
+    .detail-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 6px; text-align: center; }
+    .detail-meta { font-size: 0.9rem; color: var(--yellow); font-weight: 700; text-align: center; margin-bottom: 12px; }
+    .detail-tags { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .tag { background: var(--card-bg); border: 1px solid var(--border); padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
+    .detail-desc { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px; background: var(--card-bg); padding: 16px; border-radius: 12px; border: 1px solid var(--border); }
+    
+    .section-title { font-size: 1rem; font-weight: 800; color: var(--yellow); margin: 20px 0 12px 0; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* Horizontal Scroll for Recommendations */
+    .recommendations-row { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 12px; margin-bottom: 20px; }
+    .rec-card { flex: 0 0 110px; background: var(--card-bg); border-radius: 10px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; }
+    .rec-card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
+    .rec-title { font-size: 0.75rem; font-weight: 700; padding: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .action-group { display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
+    .btn-add-library { width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--yellow); color: #000; font-weight: 800; cursor: pointer; font-size: 1rem; }
+    .btn-toggle { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--yellow); background: transparent; color: var(--yellow); font-weight: 700; cursor: pointer; }
+    .btn-toggle.watched { background: var(--green); color: #000; border-color: var(--green); }
+    .btn-delete { width: 100%; padding: 14px; border-radius: 12px; border: none; background: #ef4444; color: #fff; font-weight: 700; cursor: pointer; }
 
     /* Search Results Grid in Fullscreen */
-    .search-results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; margin-top: 10px; }
-    .result-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; }
+    .search-results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 12px; margin-top: 10px; }
+    .result-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; display: flex; flex-direction: column; }
     .result-card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
-    .result-info { padding: 10px; display: flex; flex-direction: column; flex: 1; }
-    .result-title { font-size: 0.85rem; font-weight: 700; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .result-year { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px; }
-    .btn-add { margin-top: auto; width: 100%; padding: 8px; border-radius: 8px; border: none; background: var(--yellow); color: #000; font-weight: 700; font-size: 0.8rem; cursor: pointer; }
+    .result-info { padding: 8px; }
+    .result-title { font-size: 0.8rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .result-year { font-size: 0.7rem; color: var(--text-muted); }
   </style>
 </head>
 <body>
@@ -72,6 +95,12 @@
   <div class="search-box">
     <input type="text" id="movieInput" placeholder="Search movies, anime..." autocomplete="off">
     <button class="btn-main" id="searchBtn" onclick="searchMovies()">Search</button>
+  </div>
+
+  <div class="filter-tabs">
+    <div class="tab active" onclick="setFilter('all', this)">All</div>
+    <div class="tab" onclick="setFilter('towatch', this)">To Watch</div>
+    <div class="tab" onclick="setFilter('watched', this)">Watched</div>
   </div>
 
   <div class="grid" id="movieGrid"></div>
@@ -87,24 +116,57 @@
     <div class="search-results-grid" id="searchResultsGrid"></div>
   </div>
 
-  <!-- Fullscreen Movie Details Overlay -->
+  <!-- Fullscreen Dedicated Search Movie Details -->
+  <div class="fullscreen-view" id="searchDetailOverlay" style="z-index: 1100;">
+    <div class="fs-header">
+      <button class="back-btn" onclick="closeSearchDetailOverlay()">←</button>
+      <div style="font-weight: 800; font-size: 1.1rem; color: var(--yellow);">MOVIE PREVIEW</div>
+      <div style="width: 40px;"></div>
+    </div>
+    <img id="sdPoster" class="detail-poster" src="" alt="Poster">
+    <div id="sdTitle" class="detail-title">Title</div>
+    <div id="sdMeta" class="detail-meta">★ 0.0 • Year</div>
+    <div class="detail-tags">
+      <span class="tag" id="sdGenre">Genre: N/A</span>
+      <span class="tag" id="sdDirector">Director: N/A</span>
+    </div>
+    <div id="sdDesc" class="detail-desc">Description</div>
+    
+    <div class="action-group">
+      <button class="btn-add-library" id="addLibraryBtn">+ Add to My Library</button>
+    </div>
+
+    <div class="section-title">You Might Also Like</div>
+    <div class="recommendations-row" id="recommendationsRow"></div>
+  </div>
+
+  <!-- Fullscreen Saved Movie Details Overlay -->
   <div class="fullscreen-view" id="detailOverlay">
     <div class="fs-header">
       <button class="back-btn" onclick="closeDetailOverlay()">←</button>
-      <div style="font-weight: 800; font-size: 1.1rem; color: var(--yellow);">MOVIE DETAILS</div>
+      <div style="font-weight: 800; font-size: 1.1rem; color: var(--yellow);">MY MOVIE</div>
       <div style="width: 40px;"></div>
     </div>
     <img id="dPoster" class="detail-poster" src="" alt="Poster">
     <div id="dTitle" class="detail-title">Title</div>
     <div id="dMeta" class="detail-meta">★ 0.0 • Year</div>
+    <div class="detail-tags">
+      <span class="tag" id="dGenre">Genre: N/A</span>
+      <span class="tag" id="dDirector">Director: N/A</span>
+    </div>
     <div id="dDesc" class="detail-desc">Description</div>
-    <button class="btn-delete" id="deleteBtn">Remove from Library</button>
+    
+    <div class="action-group">
+      <button class="btn-toggle" id="statusBtn">Mark as Watched</button>
+      <button class="btn-delete" id="deleteBtn">Remove from Library</button>
+    </div>
   </div>
 
   <script>
-    const API_KEY = "15d2aea6854d7e172e2762a420b784e1";
     let library = JSON.parse(localStorage.getItem("my_movies") || "[]");
     let currentDetailIndex = null;
+    let currentFilter = "all";
+    let pendingSearchMovie = null;
 
     function render() {
       const grid = document.getElementById("movieGrid");
@@ -112,24 +174,44 @@
       const count = document.getElementById("count");
 
       grid.innerHTML = "";
-      count.textContent = `${library.length} MOVIES`;
 
-      if (library.length === 0) {
+      const filteredList = library.filter(item => {
+        if (currentFilter === "towatch") return !item.watched;
+        if (currentFilter === "watched") return item.watched;
+        return true;
+      });
+
+      count.textContent = `${filteredList.length} MOVIES`;
+
+      if (filteredList.length === 0) {
         empty.style.display = "block";
         return;
       }
       empty.style.display = "none";
 
-      library.forEach((item, index) => {
+      filteredList.forEach((item) => {
+        const actualIndex = library.findIndex(m => m.id === item.id);
         const card = document.createElement("div");
         card.className = "card";
-        card.onclick = () => openDetails(index);
+        card.onclick = () => openDetails(actualIndex);
+        
+        const statusClass = item.watched ? "status-watched" : "status-towatch";
+        const statusText = item.watched ? "Watched" : "To Watch";
+
         card.innerHTML = `
           <img src="${item.poster}" alt="${item.title}" loading="lazy">
+          <div class="card-status ${statusClass}">${statusText}</div>
           <div class="card-rating">★ ${item.rating}</div>
         `;
         grid.appendChild(card);
       });
+    }
+
+    function setFilter(filter, el) {
+      currentFilter = filter;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      render();
     }
 
     async function searchMovies() {
@@ -149,7 +231,6 @@
         if (data && data.Search && data.Search.length > 0) {
           displaySearchResults(data.Search);
         } else {
-          // Fallback if no online results found
           displaySearchResults([{
             Title: query,
             Year: new Date().getFullYear().toString(),
@@ -172,12 +253,12 @@
         
         const item = document.createElement("div");
         item.className = "result-card";
+        item.onclick = () => openSearchMovieDetail(m.imdbID, m.Title, posterUrl, m.Year);
         item.innerHTML = `
           <img src="${posterUrl}" alt="${m.Title}">
           <div class="result-info">
             <div class="result-title">${m.Title}</div>
             <div class="result-year">${m.Year}</div>
-            <button class="btn-add" onclick='addMovieFromSearch("${m.imdbID}", "${escape(m.Title)}", "${posterUrl}", "${m.Year}")'>+ Add</button>
           </div>
         `;
         resultsGrid.appendChild(item);
@@ -186,12 +267,11 @@
       document.getElementById("searchOverlay").style.display = "flex";
     }
 
-    async function addMovieFromSearch(id, titleEscaped, poster, year) {
-      const title = unescape(titleEscaped);
-      
-      // Fetch full details for the selected movie
+    async function openSearchMovieDetail(id, title, poster, year) {
       let rating = "7.5";
-      let overview = "Added to your watchlist.";
+      let overview = "No description available.";
+      let genre = "Movie";
+      let director = "N/A";
 
       try {
         const res = await fetch(`https://www.omdbapi.com/?i=${id}&apikey=trilogy`);
@@ -199,19 +279,64 @@
         if (details && details.Response !== "False") {
           rating = (details.imdbRating && details.imdbRating !== "N/A") ? details.imdbRating : "7.5";
           overview = details.Plot || overview;
+          genre = details.Genre !== "N/A" ? details.Genre.split(",")[0] : "Movie";
+          director = details.Director || director;
         }
       } catch (e) {}
 
-      const movieData = { id, title, poster, year, rating, overview };
+      pendingSearchMovie = { id, title, poster, year, rating, overview, genre, director, watched: false };
 
-      if (!library.some(item => item.id === id)) {
-        library.unshift(movieData);
-        localStorage.setItem("my_movies", JSON.stringify(library));
-        render();
+      document.getElementById("sdPoster").src = poster;
+      document.getElementById("sdTitle").textContent = title;
+      document.getElementById("sdMeta").textContent = `★ ${rating} / 10  •  ${year}`;
+      document.getElementById("sdGenre").textContent = `Genre: ${genre}`;
+      document.getElementById("sdDirector").textContent = `Director: ${director}`;
+      document.getElementById("sdDesc").textContent = overview;
+
+      document.getElementById("addLibraryBtn").onclick = () => {
+        if (!library.some(item => item.id === pendingSearchMovie.id)) {
+          library.unshift(pendingSearchMovie);
+          localStorage.setItem("my_movies", JSON.stringify(library));
+          render();
+        }
+        closeSearchDetailOverlay();
+        closeSearchOverlay();
+        document.getElementById("movieInput").value = "";
+      };
+
+      fetchRecommendations(genre, title);
+      document.getElementById("searchDetailOverlay").style.display = "flex";
+    }
+
+    async function fetchRecommendations(genre, currentTitle) {
+      const recRow = document.getElementById("recommendationsRow");
+      recRow.innerHTML = "<div style='color: var(--text-muted); font-size: 0.8rem;'>Loading suggestions...</div>";
+
+      const queryKeyword = genre !== "Movie" ? genre : currentTitle.split(" ")[0];
+
+      try {
+        const res = await fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(queryKeyword)}&apikey=trilogy`);
+        const data = await res.json();
+
+        if (data && data.Search && data.Search.length > 0) {
+          recRow.innerHTML = "";
+          data.Search.filter(m => m.Title !== currentTitle).slice(0, 6).forEach(m => {
+            const posterUrl = (m.Poster && m.Poster !== "N/A") ? m.Poster : `https://placehold.co/300x450/171717/eab308?text=${encodeURIComponent(m.Title)}`;
+            const recCard = document.createElement("div");
+            recCard.className = "rec-card";
+            recCard.onclick = () => openSearchMovieDetail(m.imdbID, m.Title, posterUrl, m.Year);
+            recCard.innerHTML = `
+              <img src="${posterUrl}" alt="${m.Title}">
+              <div class="rec-title">${m.Title}</div>
+            `;
+            recRow.appendChild(recCard);
+          });
+        } else {
+          recRow.innerHTML = "<div style='color: var(--text-muted); font-size: 0.8rem;'>No suggestions found.</div>";
+        }
+      } catch (e) {
+        recRow.innerHTML = "<div style='color: var(--text-muted); font-size: 0.8rem;'>Unable to load suggestions.</div>";
       }
-
-      closeSearchOverlay();
-      document.getElementById("movieInput").value = "";
     }
 
     function openDetails(index) {
@@ -221,7 +346,18 @@
       document.getElementById("dPoster").src = movie.poster;
       document.getElementById("dTitle").textContent = movie.title;
       document.getElementById("dMeta").textContent = `★ ${movie.rating} / 10  •  ${movie.year}`;
+      document.getElementById("dGenre").textContent = `Genre: ${movie.genre || 'N/A'}`;
+      document.getElementById("dDirector").textContent = `Director: ${movie.director || 'N/A'}`;
       document.getElementById("dDesc").textContent = movie.overview;
+
+      updateStatusBtnUI(movie.watched);
+
+      document.getElementById("statusBtn").onclick = () => {
+        library[currentDetailIndex].watched = !library[currentDetailIndex].watched;
+        localStorage.setItem("my_movies", JSON.stringify(library));
+        updateStatusBtnUI(library[currentDetailIndex].watched);
+        render();
+      };
 
       document.getElementById("deleteBtn").onclick = () => {
         library.splice(currentDetailIndex, 1);
@@ -233,8 +369,23 @@
       document.getElementById("detailOverlay").style.display = "flex";
     }
 
+    function updateStatusBtnUI(isWatched) {
+      const statusBtn = document.getElementById("statusBtn");
+      if (isWatched) {
+        statusBtn.textContent = "✓ Watched";
+        statusBtn.className = "btn-toggle watched";
+      } else {
+        statusBtn.textContent = "Mark as Watched";
+        statusBtn.className = "btn-toggle";
+      }
+    }
+
     function closeSearchOverlay() {
       document.getElementById("searchOverlay").style.display = "none";
+    }
+
+    function closeSearchDetailOverlay() {
+      document.getElementById("searchDetailOverlay").style.display = "none";
     }
 
     function closeDetailOverlay() {
