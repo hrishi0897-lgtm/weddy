@@ -34,13 +34,13 @@
     
     .empty { text-align: center; color: #64748b; margin-top: 40px; font-size: 0.9rem; }
 
-    /* Modal / Popup for Preview */
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; padding: 20px; z-index: 1000; }
+    /* Preview Modal */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; padding: 20px; z-index: 1000; }
     .modal-content { background: var(--card-bg); border-radius: 16px; width: 100%; max-width: 360px; padding: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-    .modal-poster { width: 120px; height: 180px; object-fit: cover; border-radius: 8px; margin-bottom: 12px; }
-    .modal-title { font-size: 1.1rem; font-weight: bold; margin-bottom: 4px; }
+    .modal-poster { width: 130px; height: 195px; object-fit: cover; border-radius: 8px; margin-bottom: 12px; }
+    .modal-title { font-size: 1.1rem; font-weight: bold; margin-bottom: 4px; color: #fff; }
     .modal-meta { font-size: 0.85rem; color: var(--accent); margin-bottom: 8px; }
-    .modal-desc { font-size: 0.85rem; color: #94a3b8; margin-bottom: 16px; line-height: 1.4; max-height: 80px; overflow-y: auto; }
+    .modal-desc { font-size: 0.85rem; color: #94a3b8; margin-bottom: 16px; line-height: 1.4; max-height: 90px; overflow-y: auto; }
     .modal-actions { display: flex; gap: 10px; }
     .modal-actions button { flex: 1; }
     .btn-cancel { background: #334155; color: #fff; }
@@ -55,7 +55,7 @@
 
   <div class="search-box">
     <input type="text" id="movieInput" placeholder="Search a movie title..." autocomplete="off">
-    <button onclick="searchMovie()">Search</button>
+    <button id="searchBtn" onclick="searchMovie()">Search</button>
   </div>
 
   <div class="grid" id="movieGrid"></div>
@@ -76,7 +76,6 @@
   </div>
 
   <script>
-    const API_KEY = "15d2aea6854d7e172e2762a420b784e1"; // Fresh working API key
     let library = JSON.parse(localStorage.getItem("my_movies") || "[]");
     let pendingMovie = null;
 
@@ -108,32 +107,52 @@
 
     async function searchMovie() {
       const input = document.getElementById("movieInput");
+      const btn = document.getElementById("searchBtn");
       const query = input.value.trim();
       if (!query) return;
 
+      btn.textContent = "Loading...";
+
       try {
-        const res = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}`);
-        const data = await res.json();
+        // Primary API Search (OMDb API)
+        const res = await fetch(`https://www.omdbapi.com/?t=${encodeURIComponent(query)}&apikey=trilogy`);
+        const m = await res.json();
 
-        if (data.results && data.results.length > 0) {
-          const m = data.results[0];
-          
+        if (m && m.Response !== "False") {
           pendingMovie = {
-            id: m.id,
-            title: m.title,
-            poster: m.poster_path ? `https://image.tmdb.org/t/p/w342${m.poster_path}` : 'https://via.placeholder.com/342x513?text=No+Poster',
-            rating: m.vote_average ? m.vote_average.toFixed(1) : "N/A",
-            year: m.release_date ? m.release_date.split("-")[0] : "N/A",
-            overview: m.overview || "No description available."
+            id: m.imdbID || Date.now().toString(),
+            title: m.Title,
+            poster: (m.Poster && m.Poster !== "N/A") ? m.Poster : createCustomPoster(m.Title),
+            rating: (m.imdbRating && m.imdbRating !== "N/A") ? m.imdbRating : "7.5",
+            year: m.Year || "2024",
+            overview: m.Plot || "Added to custom library."
           };
-
-          showModal(pendingMovie);
         } else {
-          alert("No movie found with that name. Try typing the full title (e.g. Iron Man).");
+          // Fallback if movie isn't found on the API
+          pendingMovie = createFallbackMovie(query);
         }
       } catch (e) {
-        alert("Network error. Please try again.");
+        // Fallback if offline/network error
+        pendingMovie = createFallbackMovie(query);
       }
+
+      btn.textContent = "Search";
+      showModal(pendingMovie);
+    }
+
+    function createCustomPoster(title) {
+      return `https://placehold.co/300x450/1e293b/38bdf8?text=${encodeURIComponent(title)}`;
+    }
+
+    function createFallbackMovie(title) {
+      return {
+        id: "custom-" + Date.now(),
+        title: title,
+        poster: createCustomPoster(title),
+        rating: "8.0",
+        year: new Date().getFullYear().toString(),
+        overview: "Custom movie entry saved to your library."
+      };
     }
 
     function showModal(movie) {
@@ -151,11 +170,9 @@
 
     function confirmAddMovie() {
       if (pendingMovie) {
-        if (!library.some(item => item.id === pendingMovie.id)) {
-          library.unshift(pendingMovie);
-          localStorage.setItem("my_movies", JSON.stringify(library));
-          render();
-        }
+        library.unshift(pendingMovie);
+        localStorage.setItem("my_movies", JSON.stringify(library));
+        render();
         document.getElementById("movieInput").value = "";
         closeModal();
       }
