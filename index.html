@@ -3,14 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Woody - Your Movie Buddy</title>
+  <title>Woody</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&display=swap');
+
     :root {
       --bg: #07090e;
-      --glass-bg: rgba(20, 24, 33, 0.65);
+      --glass-bg: rgba(20, 24, 33, 0.75);
       --glass-card: rgba(255, 255, 255, 0.03);
       --glass-border: rgba(255, 255, 255, 0.08);
-      --glass-glow: rgba(234, 179, 8, 0.15);
+      --glass-glow: rgba(234, 179, 8, 0.2);
       --yellow: #eab308;
       --yellow-hover: #ca8a04;
       --text: #f8fafc;
@@ -19,7 +21,7 @@
       --card-radius: 16px;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif; -webkit-tap-highlight-color: transparent; }
     
     body { 
       background: radial-gradient(circle at top left, #1a1500 0%, #07090e 50%, #050608 100%);
@@ -30,7 +32,7 @@
       overflow-x: hidden;
     }
 
-    /* Animated Splash Intro Screen */
+    /* Minimalist High-Impact Intro Screen */
     #splashScreen {
       position: fixed;
       top: 0;
@@ -40,35 +42,23 @@
       background: #07090e;
       z-index: 9999;
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
-      transition: opacity 0.8s ease, visibility 0.8s;
+      transition: opacity 0.6s ease, visibility 0.6s;
     }
     .splash-logo {
-      font-size: 3rem;
+      font-size: 3.8rem;
       font-weight: 900;
-      letter-spacing: 2px;
+      letter-spacing: -1px;
       color: #fff;
-      animation: zoomIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      text-transform: uppercase;
+      animation: pulseGlow 1.2s cubic-bezier(0.16, 1, 0.3, 1) infinite alternate;
     }
     .splash-logo span { color: var(--yellow); }
-    .splash-tagline {
-      font-size: 1rem;
-      color: var(--text-muted);
-      font-weight: 600;
-      margin-top: 8px;
-      letter-spacing: 1px;
-      opacity: 0;
-      animation: fadeIn 1s 0.4s ease forwards;
-    }
 
-    @keyframes zoomIn {
-      0% { opacity: 0; transform: scale(0.8); }
-      100% { opacity: 1; transform: scale(1); }
-    }
-    @keyframes fadeIn {
-      to { opacity: 1; }
+    @keyframes pulseGlow {
+      0% { transform: scale(0.92); opacity: 0.6; text-shadow: 0 0 0px var(--yellow); }
+      100% { transform: scale(1); opacity: 1; text-shadow: 0 0 30px rgba(234, 179, 8, 0.6); }
     }
 
     /* Glass Header */
@@ -85,11 +75,11 @@
       border-radius: var(--card-radius);
       box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
     }
-    .brand { font-size: 1.4rem; font-weight: 900; letter-spacing: 1.5px; color: var(--text); }
+    .brand { font-size: 1.5rem; font-weight: 900; letter-spacing: -0.5px; color: var(--text); }
     .brand span { color: var(--yellow); }
     
     .status-select, .filter-select { 
-      background: rgba(255, 255, 255, 0.05); 
+      background: #141821; 
       border: 1px solid var(--glass-border); 
       color: var(--yellow); 
       padding: 8px 12px; 
@@ -98,7 +88,6 @@
       font-weight: 800; 
       outline: none; 
       cursor: pointer;
-      backdrop-filter: blur(8px);
       transition: all 0.3s ease;
     }
     .status-select:focus, .filter-select:focus { border-color: var(--yellow); }
@@ -150,18 +139,22 @@
       transform: translateY(-2px);
     }
 
-    /* Search Control Filters inside Search Overlay */
+    /* Search Control Container (Prevents overlapping behind movies) */
+    .search-filter-container {
+      position: relative;
+      z-index: 20;
+      margin-bottom: 16px;
+      padding-bottom: 4px;
+    }
     .search-filter-bar {
       display: flex;
       gap: 8px;
-      margin-bottom: 16px;
       overflow-x: auto;
-      padding-bottom: 4px;
       scrollbar-width: none;
     }
     .search-filter-bar::-webkit-scrollbar { display: none; }
 
-    /* Grid & Animated Glass Cards */
+    /* Grid Layout */
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 14px; align-items: start; }
     .card { 
       position: relative; 
@@ -184,14 +177,14 @@
 
     .empty { text-align: center; color: var(--text-muted); margin-top: 60px; font-size: 0.95rem; line-height: 1.6; }
 
-    /* Glass Full Screen Views & Slide Animations */
+    /* Full Screen Overlay System */
     .fullscreen-view { 
       position: fixed; 
       top: 0; 
       left: 0; 
       width: 100vw; 
       height: 100vh; 
-      background: rgba(7, 9, 14, 0.85); 
+      background: rgba(7, 9, 14, 0.92); 
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
       z-index: 1000; 
@@ -207,7 +200,7 @@
       to { transform: translateY(0); opacity: 1; }
     }
 
-    .fs-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .fs-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; position: relative; z-index: 30; }
     .back-btn { 
       background: var(--glass-bg); 
       border: 1px solid var(--glass-border); 
@@ -227,7 +220,7 @@
 
     /* Media Details Glass Content */
     .detail-poster { width: 100%; max-width: 240px; aspect-ratio: 2/3; object-fit: cover; border-radius: 20px; margin: 0 auto 20px auto; border: 2px solid var(--yellow); display: block; box-shadow: 0 12px 32px rgba(0,0,0,0.8), 0 0 20px var(--glass-glow); }
-    .detail-title { font-size: 1.6rem; font-weight: 900; margin-bottom: 6px; text-align: center; letter-spacing: 0.5px; }
+    .detail-title { font-size: 1.6rem; font-weight: 900; margin-bottom: 6px; text-align: center; letter-spacing: -0.5px; }
     .detail-meta { font-size: 0.95rem; color: var(--yellow); font-weight: 800; text-align: center; margin-bottom: 14px; }
     .detail-tags { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
     .tag { background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 6px 12px; border-radius: 10px; font-size: 0.75rem; color: var(--text-muted); font-weight: 700; backdrop-filter: blur(8px); }
@@ -240,13 +233,13 @@
     
     .section-title { font-size: 1.05rem; font-weight: 900; color: var(--yellow); margin: 24px 0 14px 0; text-transform: uppercase; letter-spacing: 0.5px; }
 
-    /* Bigger Horizontal Recommendations */
+    /* Taller Vertical Recommendations */
     .recommendations-row { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 14px; margin-bottom: 20px; scrollbar-width: none; }
     .recommendations-row::-webkit-scrollbar { display: none; }
-    .rec-card { flex: 0 0 140px; background: var(--glass-bg); border-radius: 14px; overflow: hidden; border: 1px solid var(--glass-border); cursor: pointer; transition: transform 0.2s ease; }
+    .rec-card { flex: 0 0 115px; background: var(--glass-bg); border-radius: 14px; overflow: hidden; border: 1px solid var(--glass-border); cursor: pointer; transition: transform 0.2s ease; display: flex; flex-direction: column; }
     .rec-card:active { transform: scale(0.95); }
     .rec-card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; display: block; }
-    .rec-title { font-size: 0.8rem; font-weight: 800; padding: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #fff; }
+    .rec-title { font-size: 0.75rem; font-weight: 800; padding: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #fff; }
 
     .action-group { display: flex; flex-direction: column; gap: 10px; }
     .btn-primary { width: 100%; padding: 16px; border-radius: 14px; border: none; background: var(--yellow); color: #000; font-weight: 900; cursor: pointer; font-size: 1rem; box-shadow: 0 4px 20px rgba(234, 179, 8, 0.3); transition: transform 0.2s ease; }
@@ -256,8 +249,8 @@
     .btn-status-option.active { border-color: var(--yellow); color: var(--yellow); background: rgba(234, 179, 8, 0.1); }
     .btn-delete { width: 100%; padding: 14px; border-radius: 14px; border: none; background: rgba(239, 68, 68, 0.85); color: #fff; font-weight: 800; cursor: pointer; margin-top: 10px; backdrop-filter: blur(8px); }
 
-    /* Search Results Grid & Load More */
-    .search-results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 14px; margin-top: 10px; align-items: start; }
+    /* Search Results Grid */
+    .search-results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 14px; margin-top: 8px; align-items: start; position: relative; z-index: 10; }
     .result-card { background: var(--glass-card); border-radius: var(--card-radius); overflow: hidden; border: 1px solid var(--glass-border); cursor: pointer; display: flex; flex-direction: column; position: relative; transition: transform 0.2s ease; }
     .result-card:active { transform: scale(0.95); }
     .result-card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; display: block; }
@@ -272,10 +265,9 @@
 </head>
 <body>
 
-  <!-- Animated Splash Intro Screen -->
+  <!-- Minimalist High-Impact Intro Screen -->
   <div id="splashScreen">
     <div class="splash-logo">WOODY<span>.</span></div>
-    <div class="splash-tagline">YOUR MOVIE BUDDY</div>
   </div>
 
   <header>
@@ -305,7 +297,7 @@
   <div class="grid" id="movieGrid"></div>
   <div class="empty" id="emptyState">Your collection is empty.<br>Start typing above to search and add titles!</div>
 
-  <!-- Fullscreen Search Overlay with Filter Controls -->
+  <!-- Fullscreen Search Overlay -->
   <div class="fullscreen-view" id="searchOverlay">
     <div class="fs-header">
       <button class="back-btn" onclick="closeSearchOverlay()">←</button>
@@ -313,28 +305,30 @@
       <div style="width: 40px;"></div>
     </div>
 
-    <!-- Search In-Page Filter Options -->
-    <div class="search-filter-bar">
-      <select class="filter-select" id="searchTypeFilter" onchange="applySearchFilters()">
-        <option value="all">ALL TYPES</option>
-        <option value="movie">MOVIES</option>
-        <option value="series">SERIES</option>
-      </select>
-      <select class="filter-select" id="searchGenreFilter" onchange="applySearchFilters()">
-        <option value="all">ALL GENRES</option>
-        <option value="action">ACTION</option>
-        <option value="animation">ANIMATION / ANIME</option>
-        <option value="comedy">COMEDY</option>
-        <option value="drama">DRAMA</option>
-        <option value="sci-fi">SCI-FI</option>
-      </select>
-      <select class="filter-select" id="searchYearFilter" onchange="applySearchFilters()">
-        <option value="all">ALL YEARS</option>
-        <option value="2020s">2020s</option>
-        <option value="2010s">2010s</option>
-        <option value="2000s">2000s</option>
-        <option value="1990s">1990s</option>
-      </select>
+    <!-- Clear, Elevated Search Filters -->
+    <div class="search-filter-container">
+      <div class="search-filter-bar">
+        <select class="filter-select" id="searchTypeFilter" onchange="applySearchFilters()">
+          <option value="all">ALL TYPES</option>
+          <option value="movie">MOVIES</option>
+          <option value="series">SERIES</option>
+        </select>
+        <select class="filter-select" id="searchGenreFilter" onchange="applySearchFilters()">
+          <option value="all">ALL GENRES</option>
+          <option value="action">ACTION</option>
+          <option value="animation">ANIMATION / ANIME</option>
+          <option value="comedy">COMEDY</option>
+          <option value="drama">DRAMA</option>
+          <option value="sci-fi">SCI-FI</option>
+        </select>
+        <select class="filter-select" id="searchYearFilter" onchange="applySearchFilters()">
+          <option value="all">ALL YEARS</option>
+          <option value="2020s">2020s</option>
+          <option value="2010s">2010s</option>
+          <option value="2000s">2000s</option>
+          <option value="1990s">1990s</option>
+        </select>
+      </div>
     </div>
 
     <div class="search-results-grid" id="searchResultsGrid"></div>
@@ -350,7 +344,7 @@
       <div style="font-weight: 900; font-size: 1.1rem; color: var(--yellow);" id="detailHeaderTitle">DETAILS</div>
       <div style="width: 40px;"></div>
     </div>
-    <img id="mPoster" class="detail-poster" src="" alt="Poster">
+    <img id="mPoster" class="detail-poster" src="" alt="Poster" onerror="handleImageError(this)">
     <div id="mTitle" class="detail-title">Title</div>
     <div id="mMeta" class="detail-meta">★ 0.0 • Year</div>
     <div class="detail-tags">
@@ -359,7 +353,6 @@
       <span class="tag" id="mDirector">Director: N/A</span>
     </div>
 
-    <!-- Real-Time OTT Streaming Display -->
     <div class="ott-box">
       <div class="ott-title">Streaming Availability</div>
       <div class="ott-value" id="mOtt">Checking live streaming providers...</div>
@@ -380,8 +373,8 @@
       setTimeout(() => {
         const splash = document.getElementById('splashScreen');
         splash.style.opacity = '0';
-        setTimeout(() => splash.style.visibility = 'hidden', 800);
-      }, 1500);
+        setTimeout(() => splash.style.visibility = 'hidden', 600);
+      }, 1200);
     });
 
     let library = JSON.parse(localStorage.getItem("my_movies") || "[]");
@@ -393,6 +386,11 @@
     let currentPage = 1;
     let rawSearchResults = [];
     let activeMediaDetail = null;
+
+    function handleImageError(imgEl, title = "No Image") {
+      imgEl.onerror = null;
+      imgEl.src = `https://placehold.co/300x450/14181f/eab308?text=${encodeURIComponent(title)}`;
+    }
 
     document.getElementById("movieInput").addEventListener("input", function(e) {
       const query = e.target.value.trim();
@@ -449,7 +447,7 @@
         const statusClass = `status-${currentStatus}`;
 
         card.innerHTML = `
-          <img src="${item.poster}" alt="${item.title}" loading="lazy">
+          <img src="${item.poster}" alt="${item.title}" loading="lazy" onerror="handleImageError(this, '${escape(item.title)}')">
           <div class="card-status ${statusClass}">${currentStatus}</div>
           <div class="card-rating">★ ${item.rating}</div>
         `;
@@ -469,13 +467,11 @@
       render();
     }
 
-    /* REAL-TIME ACCURATE WATCH PROVIDER FETCHING VIA TMDB */
     async function fetchAccurateOtt(title, imdbID) {
       const ottEl = document.getElementById("mOtt");
       ottEl.textContent = "Checking streaming availability...";
 
       try {
-        // Search TMDB to get internal TMDB ID
         const searchRes = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(title)}`);
         const searchData = await searchRes.json();
 
@@ -483,12 +479,10 @@
           const item = searchData.results[0];
           const mediaType = item.media_type === "tv" ? "tv" : "movie";
 
-          // Fetch Watch Providers
           const providerRes = await fetch(`https://api.themoviedb.org/3/${mediaType}/${item.id}/watch/providers?api_key=${TMDB_API_KEY}`);
           const providerData = await providerRes.json();
 
           const results = providerData.results || {};
-          // Prioritize IN (India) region, fallback to US
           const regionData = results.IN || results.US || results.GB;
 
           if (regionData && regionData.flatrate && regionData.flatrate.length > 0) {
@@ -498,7 +492,7 @@
             return;
           } else if (regionData && regionData.rent && regionData.rent.length > 0) {
             const rentProviders = regionData.rent.map(p => p.provider_name).slice(0, 2).join(" • ");
-            ottEl.textContent = `Available to Rent/Buy on ${rentProviders}`;
+            ottEl.textContent = `Rent/Buy on ${rentProviders}`;
             ottEl.style.color = "var(--yellow)";
             return;
           }
@@ -512,7 +506,6 @@
       }
     }
 
-    /* SEARCH LOGIC */
     async function initiateSearch(query) {
       currentSearchQuery = query;
       currentPage = 1;
@@ -588,7 +581,7 @@
         item.className = "result-card";
         item.onclick = () => openSearchMediaDetail(m.imdbID, m.Title, posterUrl, m.Year, m.Type);
         item.innerHTML = `
-          <img src="${posterUrl}" alt="${m.Title}">
+          <img src="${posterUrl}" alt="${m.Title}" onerror="handleImageError(this, '${escape(m.Title)}')">
           <div class="type-badge">${m.Type || 'MEDIA'}</div>
           <div class="result-info">
             <div class="result-title">${m.Title}</div>
@@ -728,7 +721,7 @@
             recCard.className = "rec-card";
             recCard.onclick = () => openSearchMediaDetail(m.imdbID, m.Title, posterUrl, m.Year, m.Type);
             recCard.innerHTML = `
-              <img src="${posterUrl}" alt="${m.Title}">
+              <img src="${posterUrl}" alt="${m.Title}" onerror="handleImageError(this, '${escape(m.Title)}')">
               <div class="rec-title">${m.Title}</div>
             `;
             recRow.appendChild(recCard);
