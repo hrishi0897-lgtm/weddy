@@ -61,7 +61,7 @@
     }
     .loki-char.dot { color: var(--yellow); }
 
-    /* Glass Header with Centered Brand & Top-Right Search Button */
+    /* Header Structure */
     header { 
       display: flex; 
       justify-content: space-between; 
@@ -324,8 +324,7 @@
       align-items: start; 
       position: relative; 
       z-index: 10; 
-      min-height: 200px; 
-      padding-bottom: 40px;
+      min-height: 100px; 
     }
     .result-card { background: var(--glass-card); border-radius: var(--card-radius); overflow: hidden; border: 1px solid var(--glass-border); cursor: pointer; display: flex; flex-direction: column; position: relative; transition: transform 0.2s ease; }
     .result-card:active { transform: scale(0.95); }
@@ -334,6 +333,31 @@
     .result-title { font-size: 0.75rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .result-meta { font-size: 0.65rem; color: var(--text-muted); }
     .type-badge { position: absolute; top: 6px; left: 6px; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); color: var(--yellow); font-size: 0.55rem; font-weight: 800; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; border: 1px solid rgba(234, 179, 8, 0.3); }
+
+    /* Non-Overlapping Load More Section */
+    .load-more-section { 
+      display: flex; 
+      justify-content: center; 
+      padding: 24px 0 40px 0; 
+      width: 100%; 
+    }
+    .btn-load-more { 
+      background: var(--glass-bg); 
+      border: 1px solid var(--yellow); 
+      color: var(--yellow); 
+      padding: 14px 28px; 
+      border-radius: 14px; 
+      font-weight: 800; 
+      font-size: 0.85rem; 
+      cursor: pointer; 
+      width: 100%; 
+      max-width: 280px; 
+      backdrop-filter: blur(10px); 
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+    .btn-load-more:active { transform: scale(0.95); background: rgba(234, 179, 8, 0.15); }
   </style>
 </head>
 <body>
@@ -422,6 +446,11 @@
     </div>
 
     <div class="search-results-grid" id="searchResultsGrid"></div>
+
+    <!-- Non-Overlapping Load More Section -->
+    <div class="load-more-section" id="loadMoreSection" style="display: none;">
+      <button class="btn-load-more" id="loadMoreBtn" onclick="loadMoreResults()">Load More Results</button>
+    </div>
   </div>
 
   <!-- Universal Fullscreen Details View -->
@@ -492,6 +521,8 @@
     let currentStatusFilter = "all";
     
     let currentSearchQuery = "";
+    let currentPage = 1;
+    let totalPagesAvailable = 1;
     let rawSearchResults = [];
     let activeMediaDetail = null;
 
@@ -583,48 +614,71 @@
       render();
     }
 
-    /* Auto Spell Checker & Query Cleanup */
+    /* Advanced Keyboard Proximity & Typo Auto-Corrector Engine */
     function sanitizeAndSpellCheckQuery(query) {
-      let cleaned = query.trim().toLowerCase();
-      // Common typo corrections map
-      const corrections = {
+      let q = query.trim().toLowerCase();
+
+      // Keyboard proximity swaps (e.g. 5 -> t, 1 -> i, 0 -> o, 3 -> e, 4 -> r, 7 -> u, 8 -> i)
+      const keyNeighborMap = {
+        '5': 't', '1': 'i', '0': 'o', '3': 'e', '4': 'r', '7': 'u', '8': 'i', '@': 'a', '$': 's'
+      };
+
+      let normalized = "";
+      for (let i = 0; i < q.length; i++) {
+        const ch = q[i];
+        normalized += keyNeighborMap[ch] || ch;
+      }
+
+      // Pre-mapped common titles dictionary for exact fuzzy matches
+      const dictionary = {
+        "5hor": "thor",
+        "thorr": "thor",
         "avengrs": "avengers",
         "avengars": "avengers",
         "spidreman": "spider-man",
         "spiderman": "spider-man",
         "batman": "the batman",
-        "thorr": "thor",
         "narutoo": "naruto",
         "jujutso": "jujutsu kaisen",
-        "onepiece": "one piece"
+        "onepiece": "one piece",
+        "oppenhemer": "oppenheimer",
+        "interstelar": "interstellar",
+        "incepton": "inception"
       };
-      return corrections[cleaned] || query;
+
+      if (dictionary[normalized]) return dictionary[normalized];
+      if (dictionary[q]) return dictionary[q];
+
+      return normalized;
     }
 
     async function initiateSearch(rawQuery) {
       const correctedQuery = sanitizeAndSpellCheckQuery(rawQuery);
       currentSearchQuery = correctedQuery;
+      currentPage = 1;
       rawSearchResults = [];
 
       document.getElementById("searchResultsGrid").innerHTML = "<div style='grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;'>Searching database...</div>";
       document.getElementById("searchTitleText").textContent = `RESULTS FOR "${correctedQuery.toUpperCase()}"`;
       document.getElementById("searchOverlay").style.display = "flex";
+      document.getElementById("loadMoreSection").style.display = "none";
 
       await fetchSearchResults(correctedQuery);
     }
 
-    /* DUAL-ENGINE SEARCH SYSTEM (TMDB + OMDB Fallback) */
+    /* Multi-Engine Search with Automatic Query Fallbacks */
     async function fetchSearchResults(query) {
-      let results = [];
+      let batchResults = [];
 
       try {
-        // Engine 1: TMDB (Extensive 700k+ library)
-        const tmdbRes = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}`);
+        // Search Pass 1: TMDB Multi Search
+        const tmdbRes = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&page=${currentPage}`);
         const tmdbData = await tmdbRes.json();
 
         if (tmdbData.results && tmdbData.results.length > 0) {
-          results = tmdbData.results
-            .filter(item => item.poster_path) // Strictly require poster
+          totalPagesAvailable = tmdbData.total_pages || 1;
+          batchResults = tmdbData.results
+            .filter(item => item.poster_path)
             .map(item => ({
               imdbID: item.id.toString(),
               Title: item.title || item.name,
@@ -634,29 +688,68 @@
             }));
         }
       } catch (e) {
-        console.warn("TMDB engine fallback active.");
+        console.warn("TMDB engine pass failed, attempting fallback.");
       }
 
-      // Engine 2: OMDb Fallback if TMDB has no matches
-      if (results.length === 0) {
+      // Search Pass 2: Clean letters fallback if numbers were typed (e.g. 5hor -> hor -> thor)
+      if (batchResults.length === 0 && currentPage === 1) {
+        const cleanedAlphaOnly = query.replace(/[^a-zA-Z\s]/g, "").trim();
+        if (cleanedAlphaOnly.length > 1 && cleanedAlphaOnly !== query) {
+          try {
+            const fallbackRes = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(cleanedAlphaOnly)}&page=1`);
+            const fallbackData = await fallbackRes.json();
+            if (fallbackData.results && fallbackData.results.length > 0) {
+              totalPagesAvailable = fallbackData.total_pages || 1;
+              batchResults = fallbackData.results
+                .filter(item => item.poster_path)
+                .map(item => ({
+                  imdbID: item.id.toString(),
+                  Title: item.title || item.name,
+                  Poster: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
+                  Year: (item.release_date || item.first_air_date || "2024").substring(0, 4),
+                  Type: item.media_type === "tv" ? "series" : "movie"
+                }));
+            }
+          } catch (e) {}
+        }
+      }
+
+      // Search Pass 3: OMDb Fallback
+      if (batchResults.length === 0 && currentPage === 1) {
         try {
           const omdbRes = await fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(query)}&apikey=trilogy`);
           const omdbData = await omdbRes.json();
 
           if (omdbData && omdbData.Search && omdbData.Search.length > 0) {
-            results = omdbData.Search.filter(m => m.Poster && m.Poster !== "N/A" && m.Poster.startsWith("http"));
+            batchResults = omdbData.Search.filter(m => m.Poster && m.Poster !== "N/A" && m.Poster.startsWith("http"));
+            totalPagesAvailable = 1;
           }
         } catch (e) {
           console.error(e);
         }
       }
 
-      if (results.length > 0) {
-        rawSearchResults = results;
+      if (batchResults.length > 0) {
+        rawSearchResults = [...rawSearchResults, ...batchResults];
         applySearchFilters();
-      } else {
-        document.getElementById("searchResultsGrid").innerHTML = "<div style='grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;'>No matching titles found. Try checking your spelling.</div>";
+
+        if (currentPage < totalPagesAvailable) {
+          document.getElementById("loadMoreSection").style.display = "flex";
+        } else {
+          document.getElementById("loadMoreSection").style.display = "none";
+        }
+      } else if (currentPage === 1) {
+        document.getElementById("searchResultsGrid").innerHTML = "<div style='grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;'>No matching titles found. Try adjusting your spelling.</div>";
+        document.getElementById("loadMoreSection").style.display = "none";
       }
+    }
+
+    async function loadMoreResults() {
+      currentPage++;
+      const btn = document.getElementById("loadMoreBtn");
+      btn.textContent = "Loading...";
+      await fetchSearchResults(currentSearchQuery);
+      btn.textContent = "Load More Results";
     }
 
     function applySearchFilters() {
@@ -718,7 +811,6 @@
       let director = "N/A";
 
       try {
-        // Try fetching TMDB details first
         const tmdbRes = await fetch(`https://api.themoviedb.org/3/${type.toLowerCase() === "series" ? "tv" : "movie"}/${id}?api_key=${TMDB_API_KEY}`);
         const tmdbDetails = await tmdbRes.json();
 
@@ -727,7 +819,6 @@
           overview = tmdbDetails.overview;
           genre = tmdbDetails.genres && tmdbDetails.genres.length > 0 ? tmdbDetails.genres[0].name : "Entertainment";
         } else {
-          // Fallback to OMDb
           const omdbRes = await fetch(`https://www.omdbapi.com/?i=${id}&apikey=trilogy`);
           const omdbDetails = await omdbRes.json();
           if (omdbDetails && omdbDetails.Response !== "False") {
@@ -819,7 +910,7 @@
       document.getElementById("movieInput").value = "";
     }
 
-    /* SHUFFLED DYNAMIC RECOMMENDATIONS ENGINE */
+    /* Dynamic Shuffled Recommendations */
     async function fetchRecommendations(genre, currentTitle) {
       const recRow = document.getElementById("recommendationsRow");
       recRow.innerHTML = "<div style='color: var(--text-muted); font-size: 0.8rem;'>Loading suggestions...</div>";
@@ -835,7 +926,6 @@
           
           let candidates = data.results.filter(m => (m.title || m.name) !== currentTitle && m.poster_path);
           
-          // Fisher-Yates Random Shuffle
           for (let i = candidates.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
