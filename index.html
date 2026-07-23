@@ -3,81 +3,108 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>My Personal Movie Library</title>
+  <title>Watchlist Pro</title>
   <style>
     :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
-      --accent: #38bdf8;
-      --text: #f8fafc;
-      --gold: #f59e0b;
+      --bg: #0d0d0d;
+      --card-bg: #171717;
+      --yellow: #eab308;
+      --yellow-hover: #ca8a04;
+      --text: #f5f5f5;
+      --text-muted: #a3a3a3;
+      --border: #262626;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background: var(--bg); color: var(--text); padding: 16px; -webkit-tap-highlight-color: transparent; }
-    
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background: var(--bg); color: var(--text); min-height: 100vh; padding: 16px; }
+
+    /* Header */
     header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    h1 { font-size: 1.2rem; font-weight: 700; }
+    .brand { font-size: 1.3rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--text); }
+    .brand span { color: var(--yellow); }
+    .count-badge { background: var(--card-bg); border: 1px solid var(--border); color: var(--yellow); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
 
-    /* Search Box */
+    /* Search Bar */
     .search-box { display: flex; gap: 8px; margin-bottom: 24px; }
-    input { flex: 1; padding: 12px 16px; border-radius: 12px; border: 1px solid #334155; background: #1e293b; color: #fff; font-size: 0.95rem; outline: none; }
-    input:focus { border-color: var(--accent); }
-    button { padding: 12px 18px; border-radius: 12px; border: none; background: var(--accent); color: #000; font-weight: 600; cursor: pointer; }
+    input { flex: 1; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border); background: var(--card-bg); color: #fff; font-size: 0.95rem; outline: none; }
+    input:focus { border-color: var(--yellow); }
+    .btn-main { padding: 14px 20px; border-radius: 12px; border: none; background: var(--yellow); color: #000; font-weight: 700; font-size: 0.95rem; cursor: pointer; }
+    .btn-main:active { background: var(--yellow-hover); }
 
-    /* Main Grid */
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px; }
-    .card { position: relative; border-radius: 12px; overflow: hidden; background: var(--card-bg); aspect-ratio: 2/3; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    /* Grid */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 12px; }
+    .card { position: relative; border-radius: 12px; overflow: hidden; background: var(--card-bg); aspect-ratio: 2/3; border: 1px solid var(--border); cursor: pointer; }
     .card img { width: 100%; height: 100%; object-fit: cover; }
-    
-    .rating-badge { position: absolute; bottom: 6px; left: 6px; background: rgba(0,0,0,0.8); color: var(--gold); padding: 2px 6px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; }
-    .del-btn { position: absolute; top: 6px; right: 6px; background: rgba(239, 68, 68, 0.9); border: none; color: white; width: 24px; height: 24px; border-radius: 50%; font-size: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-    
-    .empty { text-align: center; color: #64748b; margin-top: 40px; font-size: 0.9rem; }
+    .card-rating { position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.85); color: var(--yellow); padding: 2px 6px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; border: 1px solid rgba(234, 179, 8, 0.3); }
 
-    /* Preview Modal */
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; padding: 20px; z-index: 1000; }
-    .modal-content { background: var(--card-bg); border-radius: 16px; width: 100%; max-width: 360px; padding: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-    .modal-poster { width: 130px; height: 195px; object-fit: cover; border-radius: 8px; margin-bottom: 12px; }
-    .modal-title { font-size: 1.1rem; font-weight: bold; margin-bottom: 4px; color: #fff; }
-    .modal-meta { font-size: 0.85rem; color: var(--accent); margin-bottom: 8px; }
-    .modal-desc { font-size: 0.85rem; color: #94a3b8; margin-bottom: 16px; line-height: 1.4; max-height: 90px; overflow-y: auto; }
-    .modal-actions { display: flex; gap: 10px; }
-    .modal-actions button { flex: 1; }
-    .btn-cancel { background: #334155; color: #fff; }
+    .empty { text-align: center; color: var(--text-muted); margin-top: 60px; font-size: 0.95rem; line-height: 1.5; }
+
+    /* Full Screen Views */
+    .fullscreen-view { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg); z-index: 1000; display: none; flex-direction: column; overflow-y: auto; padding: 20px; }
+    
+    .fs-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .back-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--yellow); width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+    /* Detail View Content */
+    .detail-poster { width: 100%; max-width: 260px; aspect-ratio: 2/3; object-fit: cover; border-radius: 16px; margin: 0 auto 20px auto; border: 2px solid var(--yellow); display: block; }
+    .detail-title { font-size: 1.6rem; font-weight: 800; margin-bottom: 8px; text-align: center; }
+    .detail-meta { font-size: 0.95rem; color: var(--yellow); font-weight: 700; text-align: center; margin-bottom: 16px; }
+    .detail-desc { font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 30px; background: var(--card-bg); padding: 16px; border-radius: 12px; border: 1px solid var(--border); }
+    .btn-delete { width: 100%; padding: 14px; border-radius: 12px; border: none; background: #ef4444; color: #fff; font-weight: 700; cursor: pointer; margin-top: auto; }
+
+    /* Search Results Grid in Fullscreen */
+    .search-results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; margin-top: 10px; }
+    .result-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; }
+    .result-card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
+    .result-info { padding: 10px; display: flex; flex-direction: column; flex: 1; }
+    .result-title { font-size: 0.85rem; font-weight: 700; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .result-year { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px; }
+    .btn-add { margin-top: auto; width: 100%; padding: 8px; border-radius: 8px; border: none; background: var(--yellow); color: #000; font-weight: 700; font-size: 0.8rem; cursor: pointer; }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>🎬 My Watchlist</h1>
-    <span id="count" style="color: var(--accent); font-weight: 600;">0 Movies</span>
+    <div class="brand">WATCHLIST<span>PRO</span></div>
+    <div class="count-badge" id="count">0 MOVIES</div>
   </header>
 
   <div class="search-box">
-    <input type="text" id="movieInput" placeholder="Search a movie title..." autocomplete="off">
-    <button id="searchBtn" onclick="searchMovie()">Search</button>
+    <input type="text" id="movieInput" placeholder="Search movies, anime..." autocomplete="off">
+    <button class="btn-main" id="searchBtn" onclick="searchMovies()">Search</button>
   </div>
 
   <div class="grid" id="movieGrid"></div>
-  <div class="empty" id="emptyState">Your library is empty.<br>Search and add movies above!</div>
+  <div class="empty" id="emptyState">Your collection is empty.<br>Search and add movies above.</div>
 
-  <!-- Preview Modal -->
-  <div class="modal-overlay" id="previewModal">
-    <div class="modal-content">
-      <img id="mPoster" class="modal-poster" src="" alt="Poster">
-      <div id="mTitle" class="modal-title">Movie Title</div>
-      <div id="mMeta" class="modal-meta">★ 0.0 | 2024</div>
-      <div id="mDesc" class="modal-desc">Movie description goes here...</div>
-      <div class="modal-actions">
-        <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-        <button onclick="confirmAddMovie()">Add Movie</button>
-      </div>
+  <!-- Fullscreen Search Overlay -->
+  <div class="fullscreen-view" id="searchOverlay">
+    <div class="fs-header">
+      <button class="back-btn" onclick="closeSearchOverlay()">←</button>
+      <div style="font-weight: 800; font-size: 1.1rem; color: var(--yellow);">SEARCH RESULTS</div>
+      <div style="width: 40px;"></div>
     </div>
+    <div class="search-results-grid" id="searchResultsGrid"></div>
+  </div>
+
+  <!-- Fullscreen Movie Details Overlay -->
+  <div class="fullscreen-view" id="detailOverlay">
+    <div class="fs-header">
+      <button class="back-btn" onclick="closeDetailOverlay()">←</button>
+      <div style="font-weight: 800; font-size: 1.1rem; color: var(--yellow);">MOVIE DETAILS</div>
+      <div style="width: 40px;"></div>
+    </div>
+    <img id="dPoster" class="detail-poster" src="" alt="Poster">
+    <div id="dTitle" class="detail-title">Title</div>
+    <div id="dMeta" class="detail-meta">★ 0.0 • Year</div>
+    <div id="dDesc" class="detail-desc">Description</div>
+    <button class="btn-delete" id="deleteBtn">Remove from Library</button>
   </div>
 
   <script>
+    const API_KEY = "15d2aea6854d7e172e2762a420b784e1";
     let library = JSON.parse(localStorage.getItem("my_movies") || "[]");
-    let pendingMovie = null;
+    let currentDetailIndex = null;
 
     function render() {
       const grid = document.getElementById("movieGrid");
@@ -85,7 +112,7 @@
       const count = document.getElementById("count");
 
       grid.innerHTML = "";
-      count.textContent = `${library.length} Movies`;
+      count.textContent = `${library.length} MOVIES`;
 
       if (library.length === 0) {
         empty.style.display = "block";
@@ -96,92 +123,123 @@
       library.forEach((item, index) => {
         const card = document.createElement("div");
         card.className = "card";
+        card.onclick = () => openDetails(index);
         card.innerHTML = `
           <img src="${item.poster}" alt="${item.title}" loading="lazy">
-          <div class="rating-badge">★ ${item.rating}</div>
-          <button class="del-btn" onclick="removeMovie(${index})">✕</button>
+          <div class="card-rating">★ ${item.rating}</div>
         `;
         grid.appendChild(card);
       });
     }
 
-    async function searchMovie() {
+    async function searchMovies() {
       const input = document.getElementById("movieInput");
       const btn = document.getElementById("searchBtn");
       const query = input.value.trim();
       if (!query) return;
 
-      btn.textContent = "Loading...";
+      btn.textContent = "...";
 
       try {
-        // Primary API Search (OMDb API)
-        const res = await fetch(`https://www.omdbapi.com/?t=${encodeURIComponent(query)}&apikey=trilogy`);
-        const m = await res.json();
+        const res = await fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(query)}&apikey=trilogy`);
+        const data = await res.json();
 
-        if (m && m.Response !== "False") {
-          pendingMovie = {
-            id: m.imdbID || Date.now().toString(),
-            title: m.Title,
-            poster: (m.Poster && m.Poster !== "N/A") ? m.Poster : createCustomPoster(m.Title),
-            rating: (m.imdbRating && m.imdbRating !== "N/A") ? m.imdbRating : "7.5",
-            year: m.Year || "2024",
-            overview: m.Plot || "Added to custom library."
-          };
+        btn.textContent = "Search";
+
+        if (data && data.Search && data.Search.length > 0) {
+          displaySearchResults(data.Search);
         } else {
-          // Fallback if movie isn't found on the API
-          pendingMovie = createFallbackMovie(query);
+          // Fallback if no online results found
+          displaySearchResults([{
+            Title: query,
+            Year: new Date().getFullYear().toString(),
+            imdbID: "custom-" + Date.now(),
+            Poster: `https://placehold.co/300x450/171717/eab308?text=${encodeURIComponent(query)}`
+          }]);
         }
       } catch (e) {
-        // Fallback if offline/network error
-        pendingMovie = createFallbackMovie(query);
+        btn.textContent = "Search";
+        alert("Network error. Please try again.");
       }
-
-      btn.textContent = "Search";
-      showModal(pendingMovie);
     }
 
-    function createCustomPoster(title) {
-      return `https://placehold.co/300x450/1e293b/38bdf8?text=${encodeURIComponent(title)}`;
+    function displaySearchResults(results) {
+      const resultsGrid = document.getElementById("searchResultsGrid");
+      resultsGrid.innerHTML = "";
+
+      results.forEach(m => {
+        const posterUrl = (m.Poster && m.Poster !== "N/A") ? m.Poster : `https://placehold.co/300x450/171717/eab308?text=${encodeURIComponent(m.Title)}`;
+        
+        const item = document.createElement("div");
+        item.className = "result-card";
+        item.innerHTML = `
+          <img src="${posterUrl}" alt="${m.Title}">
+          <div class="result-info">
+            <div class="result-title">${m.Title}</div>
+            <div class="result-year">${m.Year}</div>
+            <button class="btn-add" onclick='addMovieFromSearch("${m.imdbID}", "${escape(m.Title)}", "${posterUrl}", "${m.Year}")'>+ Add</button>
+          </div>
+        `;
+        resultsGrid.appendChild(item);
+      });
+
+      document.getElementById("searchOverlay").style.display = "flex";
     }
 
-    function createFallbackMovie(title) {
-      return {
-        id: "custom-" + Date.now(),
-        title: title,
-        poster: createCustomPoster(title),
-        rating: "8.0",
-        year: new Date().getFullYear().toString(),
-        overview: "Custom movie entry saved to your library."
-      };
-    }
+    async function addMovieFromSearch(id, titleEscaped, poster, year) {
+      const title = unescape(titleEscaped);
+      
+      // Fetch full details for the selected movie
+      let rating = "7.5";
+      let overview = "Added to your watchlist.";
 
-    function showModal(movie) {
-      document.getElementById("mPoster").src = movie.poster;
-      document.getElementById("mTitle").textContent = movie.title;
-      document.getElementById("mMeta").textContent = `★ ${movie.rating} / 10 • ${movie.year}`;
-      document.getElementById("mDesc").textContent = movie.overview;
-      document.getElementById("previewModal").style.display = "flex";
-    }
+      try {
+        const res = await fetch(`https://www.omdbapi.com/?i=${id}&apikey=trilogy`);
+        const details = await res.json();
+        if (details && details.Response !== "False") {
+          rating = (details.imdbRating && details.imdbRating !== "N/A") ? details.imdbRating : "7.5";
+          overview = details.Plot || overview;
+        }
+      } catch (e) {}
 
-    function closeModal() {
-      document.getElementById("previewModal").style.display = "none";
-      pendingMovie = null;
-    }
+      const movieData = { id, title, poster, year, rating, overview };
 
-    function confirmAddMovie() {
-      if (pendingMovie) {
-        library.unshift(pendingMovie);
+      if (!library.some(item => item.id === id)) {
+        library.unshift(movieData);
         localStorage.setItem("my_movies", JSON.stringify(library));
         render();
-        document.getElementById("movieInput").value = "";
-        closeModal();
       }
+
+      closeSearchOverlay();
+      document.getElementById("movieInput").value = "";
     }
 
-    function removeMovie(index) {
-      library.splice(index, 1);
-      localStorage.setItem("my_movies", JSON.stringify(library));
-      render();
+    function openDetails(index) {
+      currentDetailIndex = index;
+      const movie = library[index];
+
+      document.getElementById("dPoster").src = movie.poster;
+      document.getElementById("dTitle").textContent = movie.title;
+      document.getElementById("dMeta").textContent = `★ ${movie.rating} / 10  •  ${movie.year}`;
+      document.getElementById("dDesc").textContent = movie.overview;
+
+      document.getElementById("deleteBtn").onclick = () => {
+        library.splice(currentDetailIndex, 1);
+        localStorage.setItem("my_movies", JSON.stringify(library));
+        render();
+        closeDetailOverlay();
+      };
+
+      document.getElementById("detailOverlay").style.display = "flex";
+    }
+
+    function closeSearchOverlay() {
+      document.getElementById("searchOverlay").style.display = "none";
+    }
+
+    function closeDetailOverlay() {
+      document.getElementById("detailOverlay").style.display = "none";
+      currentDetailIndex = null;
     }
 
     render();
