@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Woody</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800;900&family=Space+Grotesk:wght@400;500;700&display=swap');
 
     :root {
       --bg: #07090e;
@@ -32,7 +32,7 @@
       overflow-x: hidden;
     }
 
-    /* Crisp & Clean Minimalist Intro Screen */
+    /* Modern Cinematic Intro Screen */
     #splashScreen {
       position: fixed;
       top: 0;
@@ -47,9 +47,10 @@
       transition: opacity 0.5s ease, visibility 0.5s;
     }
     .splash-logo {
-      font-size: 3.8rem;
-      font-weight: 900;
-      letter-spacing: -1px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 3.2rem;
+      font-weight: 500;
+      letter-spacing: 8px;
       color: #ffffff;
       text-transform: uppercase;
       animation: woodyReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -57,8 +58,8 @@
     .splash-logo span { color: var(--yellow); }
 
     @keyframes woodyReveal {
-      0% { transform: scale(0.85); opacity: 0; letter-spacing: -4px; }
-      100% { transform: scale(1); opacity: 1; letter-spacing: -1px; }
+      0% { transform: scale(0.9); opacity: 0; letter-spacing: 2px; }
+      100% { transform: scale(1); opacity: 1; letter-spacing: 8px; }
     }
 
     /* Glass Header */
@@ -92,10 +93,15 @@
     }
     .status-select:focus, .filter-select:focus { border-color: var(--yellow); }
 
-    /* Glass Search Bar */
-    .search-box { margin-bottom: 20px; position: relative; }
+    /* Glass Search Bar with Button */
+    .search-box { 
+      margin-bottom: 20px; 
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
     input { 
-      width: 100%; 
+      flex: 1; 
       padding: 16px 20px; 
       border-radius: var(--card-radius); 
       border: 1px solid var(--glass-border); 
@@ -111,6 +117,22 @@
     input:focus { 
       border-color: var(--yellow); 
       box-shadow: 0 0 20px var(--glass-glow);
+    }
+    .btn-search {
+      padding: 16px 22px;
+      border-radius: var(--card-radius);
+      border: none;
+      background: var(--yellow);
+      color: #000;
+      font-weight: 900;
+      font-size: 0.95rem;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(234, 179, 8, 0.3);
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+    .btn-search:active {
+      transform: scale(0.95);
+      background: var(--yellow-hover);
     }
 
     /* Category Glass Tabs */
@@ -205,13 +227,14 @@
 
     .fs-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; position: relative; z-index: 30; }
     
+    /* Styled Bold Back Arrow Button */
     .back-btn { 
       background: var(--glass-bg); 
       border: 1px solid var(--glass-border); 
       color: var(--yellow); 
-      width: 42px; 
-      height: 42px; 
-      border-radius: 50%; 
+      width: 44px; 
+      height: 44px; 
+      border-radius: 14px; 
       display: flex; 
       align-items: center; 
       justify-content: center; 
@@ -222,7 +245,7 @@
       padding: 0;
     }
     .back-btn:active { transform: scale(0.9); background: rgba(234, 179, 8, 0.15); }
-    .back-btn svg { width: 20px; height: 20px; stroke: var(--yellow); stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .back-btn svg { width: 22px; height: 22px; stroke: var(--yellow); stroke-width: 3.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 
     /* Media Details Glass Content */
     .detail-poster { width: 100%; max-width: 240px; aspect-ratio: 2/3; object-fit: cover; border-radius: 20px; margin: 0 auto 20px auto; border: 2px solid var(--yellow); display: block; box-shadow: 0 12px 32px rgba(0,0,0,0.8), 0 0 20px var(--glass-glow); }
@@ -271,7 +294,7 @@
 </head>
 <body>
 
-  <!-- Minimalist High-Impact Intro Screen -->
+  <!-- Modern Cinematic Intro Screen -->
   <div id="splashScreen">
     <div class="splash-logo">WOODY<span>.</span></div>
   </div>
@@ -289,7 +312,8 @@
   </header>
 
   <div class="search-box">
-    <input type="text" id="movieInput" placeholder="Type to search movies, anime, cartoons..." autocomplete="off">
+    <input type="text" id="movieInput" placeholder="Search movies, anime, cartoons..." autocomplete="off">
+    <button class="btn-search" onclick="handleSearchSubmit()">Search</button>
   </div>
 
   <div class="category-tabs">
@@ -301,7 +325,7 @@
   </div>
 
   <div class="grid" id="movieGrid"></div>
-  <div class="empty" id="emptyState">Your collection is empty.<br>Start typing above to search and add titles!</div>
+  <div class="empty" id="emptyState">Your collection is empty.<br>Type a title above and press Search to add!</div>
 
   <!-- Fullscreen Search Overlay -->
   <div class="fullscreen-view" id="searchOverlay">
@@ -310,7 +334,7 @@
         <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
       </button>
       <div style="font-weight: 900; font-size: 1.1rem; color: var(--yellow);" id="searchTitleText">SEARCHING...</div>
-      <div style="width: 42px;"></div>
+      <div style="width: 44px;"></div>
     </div>
 
     <!-- Elevated Search Filters -->
@@ -352,7 +376,7 @@
         <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
       </button>
       <div style="font-weight: 900; font-size: 1.1rem; color: var(--yellow);" id="detailHeaderTitle">DETAILS</div>
-      <div style="width: 42px;"></div>
+      <div style="width: 44px;"></div>
     </div>
     <img id="mPoster" class="detail-poster" src="" alt="Poster" onerror="handleImageError(this)">
     <div id="mTitle" class="detail-title">Title</div>
@@ -391,7 +415,6 @@
     let currentCategory = "all";
     let currentStatusFilter = "all";
     
-    let searchDebounceTimer = null;
     let currentSearchQuery = "";
     let currentPage = 1;
     let rawSearchResults = [];
@@ -402,19 +425,17 @@
       imgEl.src = `https://placehold.co/300x450/14181f/eab308?text=${encodeURIComponent(title)}`;
     }
 
-    document.getElementById("movieInput").addEventListener("input", function(e) {
-      const query = e.target.value.trim();
-      clearTimeout(searchDebounceTimer);
-
-      if (query.length < 2) {
-        closeSearchOverlay();
-        return;
+    document.getElementById("movieInput").addEventListener("keypress", function(e) {
+      if (e.key === "Enter") {
+        handleSearchSubmit();
       }
-
-      searchDebounceTimer = setTimeout(() => {
-        initiateSearch(query);
-      }, 300);
     });
+
+    function handleSearchSubmit() {
+      const query = document.getElementById("movieInput").value.trim();
+      if (!query) return;
+      initiateSearch(query);
+    }
 
     function render() {
       const grid = document.getElementById("movieGrid");
