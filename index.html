@@ -6,40 +6,41 @@
   <title>Watchlist Pro</title>
   <style>
     :root {
-      --bg: #0d0d0d;
-      --card-bg: #171717;
+      --bg: #0b0d10;
+      --card-bg: #14181f;
       --yellow: #eab308;
       --yellow-hover: #ca8a04;
-      --text: #f5f5f5;
-      --text-muted: #a3a3a3;
-      --border: #262626;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #222936;
       --green: #22c55e;
+      --card-radius: 12px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
     body { background: var(--bg); color: var(--text); min-height: 100vh; padding: 16px; }
 
-    /* Header */
-    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-    .brand { font-size: 1.3rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--text); }
+    /* Plex Style Header */
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .brand { font-size: 1.3rem; font-weight: 900; letter-spacing: 1.5px; color: var(--text); display: flex; align-items: center; gap: 6px; }
     .brand span { color: var(--yellow); }
-    .count-badge { background: var(--card-bg); border: 1px solid var(--border); color: var(--yellow); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
+    .count-badge { background: var(--card-bg); border: 1px solid var(--border); color: var(--yellow); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.5px; }
 
     /* Search Bar */
     .search-box { display: flex; gap: 8px; margin-bottom: 16px; }
-    input { flex: 1; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border); background: var(--card-bg); color: #fff; font-size: 0.95rem; outline: none; }
+    input { flex: 1; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border); background: var(--card-bg); color: #fff; font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
     input:focus { border-color: var(--yellow); }
-    .btn-main { padding: 14px 20px; border-radius: 12px; border: none; background: var(--yellow); color: #000; font-weight: 700; font-size: 0.95rem; cursor: pointer; }
+    .btn-main { padding: 14px 20px; border-radius: 12px; border: none; background: var(--yellow); color: #000; font-weight: 800; font-size: 0.95rem; cursor: pointer; }
     .btn-main:active { background: var(--yellow-hover); }
 
     /* Filter Tabs */
     .filter-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
-    .tab { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-muted); font-size: 0.85rem; font-weight: 700; cursor: pointer; text-align: center; }
+    .tab { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-muted); font-size: 0.8rem; font-weight: 800; cursor: pointer; text-align: center; text-transform: uppercase; }
     .tab.active { background: var(--yellow); color: #000; border-color: var(--yellow); }
 
     /* Grid */
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 12px; }
-    .card { position: relative; border-radius: 12px; overflow: hidden; background: var(--card-bg); aspect-ratio: 2/3; border: 1px solid var(--border); cursor: pointer; }
+    .card { position: relative; border-radius: var(--card-radius); overflow: hidden; background: var(--card-bg); aspect-ratio: 2/3; border: 1px solid var(--border); cursor: pointer; }
     .card img { width: 100%; height: 100%; object-fit: cover; }
     .card-rating { position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.85); color: var(--yellow); padding: 2px 6px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; border: 1px solid rgba(234, 179, 8, 0.3); }
     .card-status { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.85); padding: 3px 6px; border-radius: 6px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; }
@@ -54,15 +55,15 @@
     .fs-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
     .back-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--yellow); width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 
-    /* Detail View Content */
-    .detail-poster { width: 100%; max-width: 240px; aspect-ratio: 2/3; object-fit: cover; border-radius: 16px; margin: 0 auto 16px auto; border: 2px solid var(--yellow); display: block; }
+    /* Media Details Content */
+    .detail-poster { width: 100%; max-width: 240px; aspect-ratio: 2/3; object-fit: cover; border-radius: 16px; margin: 0 auto 16px auto; border: 2px solid var(--yellow); display: block; box-shadow: 0 8px 24px rgba(0,0,0,0.6); }
     .detail-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 6px; text-align: center; }
-    .detail-meta { font-size: 0.9rem; color: var(--yellow); font-weight: 700; text-align: center; margin-bottom: 12px; }
+    .detail-meta { font-size: 0.9rem; color: var(--yellow); font-weight: 800; text-align: center; margin-bottom: 12px; }
     .detail-tags { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
-    .tag { background: var(--card-bg); border: 1px solid var(--border); padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
+    .tag { background: var(--card-bg); border: 1px solid var(--border); padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; color: var(--text-muted); font-weight: 700; }
     .detail-desc { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px; background: var(--card-bg); padding: 16px; border-radius: 12px; border: 1px solid var(--border); }
     
-    .section-title { font-size: 1rem; font-weight: 800; color: var(--yellow); margin: 20px 0 12px 0; text-transform: uppercase; letter-spacing: 0.5px; }
+    .section-title { font-size: 1rem; font-weight: 800; color: var(--yellow); margin: 24px 0 12px 0; text-transform: uppercase; letter-spacing: 0.5px; }
 
     /* Horizontal Scroll for Recommendations */
     .recommendations-row { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 12px; margin-bottom: 20px; }
@@ -70,31 +71,35 @@
     .rec-card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
     .rec-title { font-size: 0.75rem; font-weight: 700; padding: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    .action-group { display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
-    .btn-add-library { width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--yellow); color: #000; font-weight: 800; cursor: pointer; font-size: 1rem; }
+    .action-group { display: flex; flex-direction: column; gap: 10px; }
+    .btn-primary { width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--yellow); color: #000; font-weight: 800; cursor: pointer; font-size: 1rem; }
     .btn-toggle { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--yellow); background: transparent; color: var(--yellow); font-weight: 700; cursor: pointer; }
     .btn-toggle.watched { background: var(--green); color: #000; border-color: var(--green); }
     .btn-delete { width: 100%; padding: 14px; border-radius: 12px; border: none; background: #ef4444; color: #fff; font-weight: 700; cursor: pointer; }
 
-    /* Search Results Grid in Fullscreen */
+    /* Search Overlay Grid & Load More */
     .search-results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 12px; margin-top: 10px; }
-    .result-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; display: flex; flex-direction: column; }
+    .result-card { background: var(--card-bg); border-radius: var(--card-radius); overflow: hidden; border: 1px solid var(--border); cursor: pointer; display: flex; flex-direction: column; position: relative; }
     .result-card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
     .result-info { padding: 8px; }
     .result-title { font-size: 0.8rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .result-year { font-size: 0.7rem; color: var(--text-muted); }
+    .result-meta { font-size: 0.7rem; color: var(--text-muted); display: flex; justify-content: space-between; margin-top: 2px; }
+    .type-badge { position: absolute; top: 6px; left: 6px; background: rgba(0,0,0,0.85); color: var(--yellow); font-size: 0.6rem; font-weight: 800; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; border: 1px solid rgba(234, 179, 8, 0.3); }
+
+    .load-more-container { text-align: center; margin: 24px 0 30px 0; }
+    .btn-load-more { background: var(--card-bg); border: 1px solid var(--yellow); color: var(--yellow); padding: 12px 30px; border-radius: 12px; font-weight: 800; font-size: 0.9rem; cursor: pointer; width: 100%; max-width: 300px; }
   </style>
 </head>
 <body>
 
   <header>
     <div class="brand">WATCHLIST<span>PRO</span></div>
-    <div class="count-badge" id="count">0 MOVIES</div>
+    <div class="count-badge" id="count">0 MEDIA</div>
   </header>
 
   <div class="search-box">
-    <input type="text" id="movieInput" placeholder="Search movies, anime..." autocomplete="off">
-    <button class="btn-main" id="searchBtn" onclick="searchMovies()">Search</button>
+    <input type="text" id="movieInput" placeholder="Search movies, anime, series, TV..." autocomplete="off">
+    <button class="btn-main" id="searchBtn" onclick="initiateSearch()">Search</button>
   </div>
 
   <div class="filter-tabs">
@@ -104,7 +109,7 @@
   </div>
 
   <div class="grid" id="movieGrid"></div>
-  <div class="empty" id="emptyState">Your collection is empty.<br>Search and add movies above.</div>
+  <div class="empty" id="emptyState">Your collection is empty.<br>Search and add titles above.</div>
 
   <!-- Fullscreen Search Overlay -->
   <div class="fullscreen-view" id="searchOverlay">
@@ -114,59 +119,44 @@
       <div style="width: 40px;"></div>
     </div>
     <div class="search-results-grid" id="searchResultsGrid"></div>
+    <div class="load-more-container" id="loadMoreContainer" style="display: none;">
+      <button class="btn-load-more" id="loadMoreBtn" onclick="loadMoreResults()">Load More Results</button>
+    </div>
   </div>
 
-  <!-- Fullscreen Dedicated Search Movie Details -->
-  <div class="fullscreen-view" id="searchDetailOverlay" style="z-index: 1100;">
+  <!-- Universal Fullscreen Details View (Home & Search) -->
+  <div class="fullscreen-view" id="mediaDetailOverlay" style="z-index: 1100;">
     <div class="fs-header">
-      <button class="back-btn" onclick="closeSearchDetailOverlay()">←</button>
-      <div style="font-weight: 800; font-size: 1.1rem; color: var(--yellow);">MOVIE PREVIEW</div>
+      <button class="back-btn" onclick="closeMediaDetailOverlay()">←</button>
+      <div style="font-weight: 800; font-size: 1.1rem; color: var(--yellow);" id="detailHeaderTitle">DETAILS</div>
       <div style="width: 40px;"></div>
     </div>
-    <img id="sdPoster" class="detail-poster" src="" alt="Poster">
-    <div id="sdTitle" class="detail-title">Title</div>
-    <div id="sdMeta" class="detail-meta">★ 0.0 • Year</div>
+    <img id="mPoster" class="detail-poster" src="" alt="Poster">
+    <div id="mTitle" class="detail-title">Title</div>
+    <div id="mMeta" class="detail-meta">★ 0.0 • Year</div>
     <div class="detail-tags">
-      <span class="tag" id="sdGenre">Genre: N/A</span>
-      <span class="tag" id="sdDirector">Director: N/A</span>
+      <span class="tag" id="mType">Type: N/A</span>
+      <span class="tag" id="mGenre">Genre: N/A</span>
+      <span class="tag" id="mDirector">Director: N/A</span>
     </div>
-    <div id="sdDesc" class="detail-desc">Description</div>
+    <div id="mDesc" class="detail-desc">Description</div>
     
-    <div class="action-group">
-      <button class="btn-add-library" id="addLibraryBtn">+ Add to My Library</button>
-    </div>
+    <div class="action-group" id="actionGroup"></div>
 
-    <div class="section-title">You Might Also Like</div>
+    <div class="section-title">Similar Suggestions</div>
     <div class="recommendations-row" id="recommendationsRow"></div>
-  </div>
-
-  <!-- Fullscreen Saved Movie Details Overlay -->
-  <div class="fullscreen-view" id="detailOverlay">
-    <div class="fs-header">
-      <button class="back-btn" onclick="closeDetailOverlay()">←</button>
-      <div style="font-weight: 800; font-size: 1.1rem; color: var(--yellow);">MY MOVIE</div>
-      <div style="width: 40px;"></div>
-    </div>
-    <img id="dPoster" class="detail-poster" src="" alt="Poster">
-    <div id="dTitle" class="detail-title">Title</div>
-    <div id="dMeta" class="detail-meta">★ 0.0 • Year</div>
-    <div class="detail-tags">
-      <span class="tag" id="dGenre">Genre: N/A</span>
-      <span class="tag" id="dDirector">Director: N/A</span>
-    </div>
-    <div id="dDesc" class="detail-desc">Description</div>
-    
-    <div class="action-group">
-      <button class="btn-toggle" id="statusBtn">Mark as Watched</button>
-      <button class="btn-delete" id="deleteBtn">Remove from Library</button>
-    </div>
   </div>
 
   <script>
     let library = JSON.parse(localStorage.getItem("my_movies") || "[]");
-    let currentDetailIndex = null;
     let currentFilter = "all";
-    let pendingSearchMovie = null;
+    
+    // Search Pagination State
+    let currentSearchQuery = "";
+    let currentPage = 1;
+    let totalSearchResults = 0;
+    let activeMediaDetail = null;
+    let isFromHome = false;
 
     function render() {
       const grid = document.getElementById("movieGrid");
@@ -181,7 +171,7 @@
         return true;
       });
 
-      count.textContent = `${filteredList.length} MOVIES`;
+      count.textContent = `${filteredList.length} TITLES`;
 
       if (filteredList.length === 0) {
         empty.style.display = "block";
@@ -193,7 +183,7 @@
         const actualIndex = library.findIndex(m => m.id === item.id);
         const card = document.createElement("div");
         card.className = "card";
-        card.onclick = () => openDetails(actualIndex);
+        card.onclick = () => openHomeMediaDetail(actualIndex);
         
         const statusClass = item.watched ? "status-watched" : "status-towatch";
         const statusText = item.watched ? "Watched" : "To Watch";
@@ -214,63 +204,87 @@
       render();
     }
 
-    async function searchMovies() {
+    /* SEARCH LOGIC WITH PAGINATION */
+    async function initiateSearch() {
       const input = document.getElementById("movieInput");
-      const btn = document.getElementById("searchBtn");
       const query = input.value.trim();
       if (!query) return;
 
-      btn.textContent = "...";
+      currentSearchQuery = query;
+      currentPage = 1;
+      document.getElementById("searchResultsGrid").innerHTML = "";
 
-      try {
-        const res = await fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(query)}&apikey=trilogy`);
-        const data = await res.json();
-
-        btn.textContent = "Search";
-
-        if (data && data.Search && data.Search.length > 0) {
-          displaySearchResults(data.Search);
-        } else {
-          displaySearchResults([{
-            Title: query,
-            Year: new Date().getFullYear().toString(),
-            imdbID: "custom-" + Date.now(),
-            Poster: `https://placehold.co/300x450/171717/eab308?text=${encodeURIComponent(query)}`
-          }]);
-        }
-      } catch (e) {
-        btn.textContent = "Search";
-        alert("Network error. Please try again.");
-      }
-    }
-
-    function displaySearchResults(results) {
-      const resultsGrid = document.getElementById("searchResultsGrid");
-      resultsGrid.innerHTML = "";
-
-      results.forEach(m => {
-        const posterUrl = (m.Poster && m.Poster !== "N/A") ? m.Poster : `https://placehold.co/300x450/171717/eab308?text=${encodeURIComponent(m.Title)}`;
-        
-        const item = document.createElement("div");
-        item.className = "result-card";
-        item.onclick = () => openSearchMovieDetail(m.imdbID, m.Title, posterUrl, m.Year);
-        item.innerHTML = `
-          <img src="${posterUrl}" alt="${m.Title}">
-          <div class="result-info">
-            <div class="result-title">${m.Title}</div>
-            <div class="result-year">${m.Year}</div>
-          </div>
-        `;
-        resultsGrid.appendChild(item);
-      });
+      document.getElementById("searchBtn").textContent = "...";
+      await fetchSearchResults();
+      document.getElementById("searchBtn").textContent = "Search";
 
       document.getElementById("searchOverlay").style.display = "flex";
     }
 
-    async function openSearchMovieDetail(id, title, poster, year) {
+    async function fetchSearchResults() {
+      try {
+        const res = await fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(currentSearchQuery)}&page=${currentPage}&apikey=trilogy`);
+        const data = await res.json();
+
+        if (data && data.Search && data.Search.length > 0) {
+          totalSearchResults = parseInt(data.totalResults) || 0;
+          appendSearchResults(data.Search);
+
+          // Show/Hide Load More Button
+          const loadedCount = currentPage * 10;
+          if (loadedCount < totalSearchResults) {
+            document.getElementById("loadMoreContainer").style.display = "block";
+          } else {
+            document.getElementById("loadMoreContainer").style.display = "none";
+          }
+        } else if (currentPage === 1) {
+          document.getElementById("searchResultsGrid").innerHTML = "<div style='grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;'>No results found. Try another search query.</div>";
+          document.getElementById("loadMoreContainer").style.display = "none";
+        }
+      } catch (e) {
+        alert("Network error fetching search results.");
+      }
+    }
+
+    async function loadMoreResults() {
+      currentPage++;
+      const btn = document.getElementById("loadMoreBtn");
+      btn.textContent = "Loading...";
+      await fetchSearchResults();
+      btn.textContent = "Load More Results";
+    }
+
+    function appendSearchResults(results) {
+      const resultsGrid = document.getElementById("searchResultsGrid");
+
+      results.forEach(m => {
+        const posterUrl = (m.Poster && m.Poster !== "N/A") ? m.Poster : `https://placehold.co/300x450/14181f/eab308?text=${encodeURIComponent(m.Title)}`;
+        
+        const item = document.createElement("div");
+        item.className = "result-card";
+        item.onclick = () => openSearchMediaDetail(m.imdbID, m.Title, posterUrl, m.Year, m.Type);
+        item.innerHTML = `
+          <img src="${posterUrl}" alt="${m.Title}">
+          <div class="type-badge">${m.Type || 'MEDIA'}</div>
+          <div class="result-info">
+            <div class="result-title">${m.Title}</div>
+            <div class="result-meta">
+              <span>${m.Year}</span>
+            </div>
+          </div>
+        `;
+        resultsGrid.appendChild(item);
+      });
+    }
+
+    /* DETAILS VIEW (UNIFIED) */
+    async function openSearchMediaDetail(id, title, poster, year, type = "movie") {
+      isFromHome = false;
+      document.getElementById("detailHeaderTitle").textContent = "PREVIEW";
+      
       let rating = "7.5";
       let overview = "No description available.";
-      let genre = "Movie";
+      let genre = "Entertainment";
       let director = "N/A";
 
       try {
@@ -279,40 +293,94 @@
         if (details && details.Response !== "False") {
           rating = (details.imdbRating && details.imdbRating !== "N/A") ? details.imdbRating : "7.5";
           overview = details.Plot || overview;
-          genre = details.Genre !== "N/A" ? details.Genre.split(",")[0] : "Movie";
+          genre = details.Genre !== "N/A" ? details.Genre.split(",")[0] : "Entertainment";
           director = details.Director || director;
         }
       } catch (e) {}
 
-      pendingSearchMovie = { id, title, poster, year, rating, overview, genre, director, watched: false };
+      activeMediaDetail = { id, title, poster, year, type: type.toUpperCase(), rating, overview, genre, director, watched: false };
 
-      document.getElementById("sdPoster").src = poster;
-      document.getElementById("sdTitle").textContent = title;
-      document.getElementById("sdMeta").textContent = `★ ${rating} / 10  •  ${year}`;
-      document.getElementById("sdGenre").textContent = `Genre: ${genre}`;
-      document.getElementById("sdDirector").textContent = `Director: ${director}`;
-      document.getElementById("sdDesc").textContent = overview;
+      displayDetailOverlay();
 
-      document.getElementById("addLibraryBtn").onclick = () => {
-        if (!library.some(item => item.id === pendingSearchMovie.id)) {
-          library.unshift(pendingSearchMovie);
-          localStorage.setItem("my_movies", JSON.stringify(library));
-          render();
-        }
-        closeSearchDetailOverlay();
-        closeSearchOverlay();
-        document.getElementById("movieInput").value = "";
-      };
+      const actionGroup = document.getElementById("actionGroup");
+      const isAlreadySaved = library.some(item => item.id === id);
+
+      if (isAlreadySaved) {
+        actionGroup.innerHTML = `<button class="btn-primary" style="background: var(--card-bg); color: var(--yellow); border: 1px solid var(--yellow);" disabled>✓ Already In Library</button>`;
+      } else {
+        actionGroup.innerHTML = `<button class="btn-primary" onclick="addCurrentToLibrary()">+ Add to My Library</button>`;
+      }
 
       fetchRecommendations(genre, title);
-      document.getElementById("searchDetailOverlay").style.display = "flex";
+    }
+
+    function openHomeMediaDetail(index) {
+      isFromHome = true;
+      document.getElementById("detailHeaderTitle").textContent = "MY TITLE";
+      
+      const item = library[index];
+      activeMediaDetail = { ...item };
+
+      displayDetailOverlay();
+      renderHomeActionGroup(index);
+      fetchRecommendations(item.genre || "Movie", item.title);
+    }
+
+    function displayDetailOverlay() {
+      const item = activeMediaDetail;
+      document.getElementById("mPoster").src = item.poster;
+      document.getElementById("mTitle").textContent = item.title;
+      document.getElementById("mMeta").textContent = `★ ${item.rating} / 10  •  ${item.year}`;
+      document.getElementById("mType").textContent = `Type: ${item.type || 'MEDIA'}`;
+      document.getElementById("mGenre").textContent = `Genre: ${item.genre || 'N/A'}`;
+      document.getElementById("mDirector").textContent = `Director: ${item.director || 'N/A'}`;
+      document.getElementById("mDesc").textContent = item.overview;
+
+      document.getElementById("mediaDetailOverlay").style.display = "flex";
+    }
+
+    function renderHomeActionGroup(index) {
+      const actionGroup = document.getElementById("actionGroup");
+      const isWatched = library[index].watched;
+
+      actionGroup.innerHTML = `
+        <button class="btn-toggle ${isWatched ? 'watched' : ''}" onclick="toggleWatchedStatus(${index})">
+          ${isWatched ? '✓ Watched' : 'Mark as Watched'}
+        </button>
+        <button class="btn-delete" onclick="removeFromLibrary(${index})">Remove from Library</button>
+      `;
+    }
+
+    function toggleWatchedStatus(index) {
+      library[index].watched = !library[index].watched;
+      localStorage.setItem("my_movies", JSON.stringify(library));
+      renderHomeActionGroup(index);
+      render();
+    }
+
+    function removeFromLibrary(index) {
+      library.splice(index, 1);
+      localStorage.setItem("my_movies", JSON.stringify(library));
+      render();
+      closeMediaDetailOverlay();
+    }
+
+    function addCurrentToLibrary() {
+      if (activeMediaDetail && !library.some(item => item.id === activeMediaDetail.id)) {
+        library.unshift(activeMediaDetail);
+        localStorage.setItem("my_movies", JSON.stringify(library));
+        render();
+      }
+      closeMediaDetailOverlay();
+      closeSearchOverlay();
+      document.getElementById("movieInput").value = "";
     }
 
     async function fetchRecommendations(genre, currentTitle) {
       const recRow = document.getElementById("recommendationsRow");
       recRow.innerHTML = "<div style='color: var(--text-muted); font-size: 0.8rem;'>Loading suggestions...</div>";
 
-      const queryKeyword = genre !== "Movie" ? genre : currentTitle.split(" ")[0];
+      const queryKeyword = (genre && genre !== "Entertainment" && genre !== "N/A") ? genre : currentTitle.split(" ")[0];
 
       try {
         const res = await fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(queryKeyword)}&apikey=trilogy`);
@@ -321,10 +389,10 @@
         if (data && data.Search && data.Search.length > 0) {
           recRow.innerHTML = "";
           data.Search.filter(m => m.Title !== currentTitle).slice(0, 6).forEach(m => {
-            const posterUrl = (m.Poster && m.Poster !== "N/A") ? m.Poster : `https://placehold.co/300x450/171717/eab308?text=${encodeURIComponent(m.Title)}`;
+            const posterUrl = (m.Poster && m.Poster !== "N/A") ? m.Poster : `https://placehold.co/300x450/14181f/eab308?text=${encodeURIComponent(m.Title)}`;
             const recCard = document.createElement("div");
             recCard.className = "rec-card";
-            recCard.onclick = () => openSearchMovieDetail(m.imdbID, m.Title, posterUrl, m.Year);
+            recCard.onclick = () => openSearchMediaDetail(m.imdbID, m.Title, posterUrl, m.Year, m.Type);
             recCard.innerHTML = `
               <img src="${posterUrl}" alt="${m.Title}">
               <div class="rec-title">${m.Title}</div>
@@ -339,58 +407,13 @@
       }
     }
 
-    function openDetails(index) {
-      currentDetailIndex = index;
-      const movie = library[index];
-
-      document.getElementById("dPoster").src = movie.poster;
-      document.getElementById("dTitle").textContent = movie.title;
-      document.getElementById("dMeta").textContent = `★ ${movie.rating} / 10  •  ${movie.year}`;
-      document.getElementById("dGenre").textContent = `Genre: ${movie.genre || 'N/A'}`;
-      document.getElementById("dDirector").textContent = `Director: ${movie.director || 'N/A'}`;
-      document.getElementById("dDesc").textContent = movie.overview;
-
-      updateStatusBtnUI(movie.watched);
-
-      document.getElementById("statusBtn").onclick = () => {
-        library[currentDetailIndex].watched = !library[currentDetailIndex].watched;
-        localStorage.setItem("my_movies", JSON.stringify(library));
-        updateStatusBtnUI(library[currentDetailIndex].watched);
-        render();
-      };
-
-      document.getElementById("deleteBtn").onclick = () => {
-        library.splice(currentDetailIndex, 1);
-        localStorage.setItem("my_movies", JSON.stringify(library));
-        render();
-        closeDetailOverlay();
-      };
-
-      document.getElementById("detailOverlay").style.display = "flex";
-    }
-
-    function updateStatusBtnUI(isWatched) {
-      const statusBtn = document.getElementById("statusBtn");
-      if (isWatched) {
-        statusBtn.textContent = "✓ Watched";
-        statusBtn.className = "btn-toggle watched";
-      } else {
-        statusBtn.textContent = "Mark as Watched";
-        statusBtn.className = "btn-toggle";
-      }
-    }
-
     function closeSearchOverlay() {
       document.getElementById("searchOverlay").style.display = "none";
     }
 
-    function closeSearchDetailOverlay() {
-      document.getElementById("searchDetailOverlay").style.display = "none";
-    }
-
-    function closeDetailOverlay() {
-      document.getElementById("detailOverlay").style.display = "none";
-      currentDetailIndex = null;
+    function closeMediaDetailOverlay() {
+      document.getElementById("mediaDetailOverlay").style.display = "none";
+      activeMediaDetail = null;
     }
 
     render();
