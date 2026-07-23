@@ -10,9 +10,9 @@
     :root {
       --bg: #07090e;
       --glass-bg: rgba(20, 24, 33, 0.75);
-      --glass-card: rgba(255, 255, 255, 0.03);
+      --glass-card: rgba(255, 255, 255, 0.04);
       --glass-border: rgba(255, 255, 255, 0.08);
-      --glass-glow: rgba(234, 179, 8, 0.2);
+      --glass-glow: rgba(234, 179, 8, 0.25);
       --yellow: #eab308;
       --yellow-hover: #ca8a04;
       --text: #f8fafc;
@@ -32,7 +32,7 @@
       overflow-x: hidden;
     }
 
-    /* Minimalist High-Impact Intro Screen */
+    /* Crisp & Clean Minimalist Intro Screen */
     #splashScreen {
       position: fixed;
       top: 0;
@@ -44,21 +44,21 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      transition: opacity 0.6s ease, visibility 0.6s;
+      transition: opacity 0.5s ease, visibility 0.5s;
     }
     .splash-logo {
       font-size: 3.8rem;
       font-weight: 900;
       letter-spacing: -1px;
-      color: #fff;
+      color: #ffffff;
       text-transform: uppercase;
-      animation: pulseGlow 1.2s cubic-bezier(0.16, 1, 0.3, 1) infinite alternate;
+      animation: woodyReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
     .splash-logo span { color: var(--yellow); }
 
-    @keyframes pulseGlow {
-      0% { transform: scale(0.92); opacity: 0.6; text-shadow: 0 0 0px var(--yellow); }
-      100% { transform: scale(1); opacity: 1; text-shadow: 0 0 30px rgba(234, 179, 8, 0.6); }
+    @keyframes woodyReveal {
+      0% { transform: scale(0.85); opacity: 0; letter-spacing: -4px; }
+      100% { transform: scale(1); opacity: 1; letter-spacing: -1px; }
     }
 
     /* Glass Header */
@@ -123,6 +123,7 @@
       border: 1px solid var(--glass-border); 
       background: var(--glass-bg); 
       backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       color: var(--text-muted); 
       font-size: 0.8rem; 
       font-weight: 800; 
@@ -139,7 +140,7 @@
       transform: translateY(-2px);
     }
 
-    /* Search Control Container (Prevents overlapping behind movies) */
+    /* Search Control Container */
     .search-filter-container {
       position: relative;
       z-index: 20;
@@ -162,6 +163,7 @@
       overflow: hidden; 
       background: var(--glass-card); 
       backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       aspect-ratio: 2/3; 
       border: 1px solid var(--glass-border); 
       cursor: pointer; 
@@ -169,8 +171,8 @@
     }
     .card:active { transform: scale(0.95); }
     .card img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .card-rating { position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.75); backdrop-filter: blur(6px); color: var(--yellow); padding: 2px 6px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; border: 1px solid rgba(234, 179, 8, 0.3); }
-    .card-status { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.75); backdrop-filter: blur(6px); padding: 3px 6px; border-radius: 6px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; }
+    .card-rating { position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.8); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); color: var(--yellow); padding: 2px 6px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; border: 1px solid rgba(234, 179, 8, 0.3); }
+    .card-status { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.8); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); padding: 3px 6px; border-radius: 6px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; }
     .status-completed { color: var(--green); border: 1px solid rgba(34, 197, 94, 0.4); }
     .status-ongoing { color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); }
     .status-watchlist { color: var(--yellow); border: 1px solid rgba(234, 179, 8, 0.4); }
@@ -184,7 +186,7 @@
       left: 0; 
       width: 100vw; 
       height: 100vh; 
-      background: rgba(7, 9, 14, 0.92); 
+      background: rgba(7, 9, 14, 0.94); 
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
       z-index: 1000; 
@@ -192,15 +194,17 @@
       flex-direction: column; 
       overflow-y: auto; 
       padding: 20px;
-      animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      will-change: transform, opacity;
+      animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
     
     @keyframes slideUp {
-      from { transform: translateY(100%); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
+      from { transform: translate3d(0, 100%, 0); opacity: 0; }
+      to { transform: translate3d(0, 0, 0); opacity: 1; }
     }
 
     .fs-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; position: relative; z-index: 30; }
+    
     .back-btn { 
       background: var(--glass-bg); 
       border: 1px solid var(--glass-border); 
@@ -208,32 +212,34 @@
       width: 42px; 
       height: 42px; 
       border-radius: 50%; 
-      font-size: 1.2rem; 
       display: flex; 
       align-items: center; 
       justify-content: center; 
       cursor: pointer;
       backdrop-filter: blur(10px);
-      transition: transform 0.2s ease;
+      -webkit-backdrop-filter: blur(10px);
+      transition: transform 0.2s ease, background 0.2s ease;
+      padding: 0;
     }
-    .back-btn:active { transform: scale(0.9); }
+    .back-btn:active { transform: scale(0.9); background: rgba(234, 179, 8, 0.15); }
+    .back-btn svg { width: 20px; height: 20px; stroke: var(--yellow); stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 
     /* Media Details Glass Content */
     .detail-poster { width: 100%; max-width: 240px; aspect-ratio: 2/3; object-fit: cover; border-radius: 20px; margin: 0 auto 20px auto; border: 2px solid var(--yellow); display: block; box-shadow: 0 12px 32px rgba(0,0,0,0.8), 0 0 20px var(--glass-glow); }
     .detail-title { font-size: 1.6rem; font-weight: 900; margin-bottom: 6px; text-align: center; letter-spacing: -0.5px; }
     .detail-meta { font-size: 0.95rem; color: var(--yellow); font-weight: 800; text-align: center; margin-bottom: 14px; }
     .detail-tags { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
-    .tag { background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 6px 12px; border-radius: 10px; font-size: 0.75rem; color: var(--text-muted); font-weight: 700; backdrop-filter: blur(8px); }
+    .tag { background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 6px 12px; border-radius: 10px; font-size: 0.75rem; color: var(--text-muted); font-weight: 700; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
     
-    .ott-box { background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 14px 18px; border-radius: 16px; margin-bottom: 18px; text-align: center; backdrop-filter: blur(12px); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .ott-box { background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 14px 18px; border-radius: 16px; margin-bottom: 18px; text-align: center; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
     .ott-title { font-size: 0.75rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.5px; }
     .ott-value { font-size: 1rem; color: var(--yellow); font-weight: 800; }
 
-    .detail-desc { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px; background: var(--glass-bg); padding: 18px; border-radius: 16px; border: 1px solid var(--glass-border); backdrop-filter: blur(12px); }
+    .detail-desc { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px; background: var(--glass-bg); padding: 18px; border-radius: 16px; border: 1px solid var(--glass-border); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
     
     .section-title { font-size: 1.05rem; font-weight: 900; color: var(--yellow); margin: 24px 0 14px 0; text-transform: uppercase; letter-spacing: 0.5px; }
 
-    /* Taller Vertical Recommendations */
+    /* Vertical Recommendations */
     .recommendations-row { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 14px; margin-bottom: 20px; scrollbar-width: none; }
     .recommendations-row::-webkit-scrollbar { display: none; }
     .rec-card { flex: 0 0 115px; background: var(--glass-bg); border-radius: 14px; overflow: hidden; border: 1px solid var(--glass-border); cursor: pointer; transition: transform 0.2s ease; display: flex; flex-direction: column; }
@@ -247,20 +253,20 @@
     .status-picker { display: flex; gap: 8px; }
     .btn-status-option { flex: 1; padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--text-muted); font-size: 0.75rem; font-weight: 800; cursor: pointer; text-align: center; text-transform: uppercase; transition: all 0.2s ease; }
     .btn-status-option.active { border-color: var(--yellow); color: var(--yellow); background: rgba(234, 179, 8, 0.1); }
-    .btn-delete { width: 100%; padding: 14px; border-radius: 14px; border: none; background: rgba(239, 68, 68, 0.85); color: #fff; font-weight: 800; cursor: pointer; margin-top: 10px; backdrop-filter: blur(8px); }
+    .btn-delete { width: 100%; padding: 14px; border-radius: 14px; border: none; background: rgba(239, 68, 68, 0.85); color: #fff; font-weight: 800; cursor: pointer; margin-top: 10px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
 
     /* Search Results Grid */
-    .search-results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 14px; margin-top: 8px; align-items: start; position: relative; z-index: 10; }
+    .search-results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 14px; margin-top: 8px; align-items: start; position: relative; z-index: 10; min-height: 200px; }
     .result-card { background: var(--glass-card); border-radius: var(--card-radius); overflow: hidden; border: 1px solid var(--glass-border); cursor: pointer; display: flex; flex-direction: column; position: relative; transition: transform 0.2s ease; }
     .result-card:active { transform: scale(0.95); }
     .result-card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; display: block; }
     .result-info { padding: 8px; }
     .result-title { font-size: 0.8rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .result-meta { font-size: 0.7rem; color: var(--text-muted); }
-    .type-badge { position: absolute; top: 6px; left: 6px; background: rgba(0,0,0,0.8); backdrop-filter: blur(6px); color: var(--yellow); font-size: 0.6rem; font-weight: 800; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; border: 1px solid rgba(234, 179, 8, 0.3); }
+    .type-badge { position: absolute; top: 6px; left: 6px; background: rgba(0,0,0,0.8); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); color: var(--yellow); font-size: 0.6rem; font-weight: 800; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; border: 1px solid rgba(234, 179, 8, 0.3); }
 
     .load-more-container { text-align: center; margin: 24px 0 30px 0; }
-    .btn-load-more { background: var(--glass-bg); border: 1px solid var(--yellow); color: var(--yellow); padding: 14px 30px; border-radius: 14px; font-weight: 800; font-size: 0.9rem; cursor: pointer; width: 100%; max-width: 300px; backdrop-filter: blur(10px); }
+    .btn-load-more { background: var(--glass-bg); border: 1px solid var(--yellow); color: var(--yellow); padding: 14px 30px; border-radius: 14px; font-weight: 800; font-size: 0.9rem; cursor: pointer; width: 100%; max-width: 300px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
   </style>
 </head>
 <body>
@@ -300,12 +306,14 @@
   <!-- Fullscreen Search Overlay -->
   <div class="fullscreen-view" id="searchOverlay">
     <div class="fs-header">
-      <button class="back-btn" onclick="closeSearchOverlay()">←</button>
+      <button class="back-btn" onclick="closeSearchOverlay()" aria-label="Back">
+        <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      </button>
       <div style="font-weight: 900; font-size: 1.1rem; color: var(--yellow);" id="searchTitleText">SEARCHING...</div>
-      <div style="width: 40px;"></div>
+      <div style="width: 42px;"></div>
     </div>
 
-    <!-- Clear, Elevated Search Filters -->
+    <!-- Elevated Search Filters -->
     <div class="search-filter-container">
       <div class="search-filter-bar">
         <select class="filter-select" id="searchTypeFilter" onchange="applySearchFilters()">
@@ -340,9 +348,11 @@
   <!-- Universal Fullscreen Details View -->
   <div class="fullscreen-view" id="mediaDetailOverlay" style="z-index: 1100;">
     <div class="fs-header">
-      <button class="back-btn" onclick="closeMediaDetailOverlay()">←</button>
+      <button class="back-btn" onclick="closeMediaDetailOverlay()" aria-label="Back">
+        <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      </button>
       <div style="font-weight: 900; font-size: 1.1rem; color: var(--yellow);" id="detailHeaderTitle">DETAILS</div>
-      <div style="width: 40px;"></div>
+      <div style="width: 42px;"></div>
     </div>
     <img id="mPoster" class="detail-poster" src="" alt="Poster" onerror="handleImageError(this)">
     <div id="mTitle" class="detail-title">Title</div>
@@ -373,8 +383,8 @@
       setTimeout(() => {
         const splash = document.getElementById('splashScreen');
         splash.style.opacity = '0';
-        setTimeout(() => splash.style.visibility = 'hidden', 600);
-      }, 1200);
+        setTimeout(() => splash.style.visibility = 'hidden', 500);
+      }, 1000);
     });
 
     let library = JSON.parse(localStorage.getItem("my_movies") || "[]");
@@ -447,7 +457,7 @@
         const statusClass = `status-${currentStatus}`;
 
         card.innerHTML = `
-          <img src="${item.poster}" alt="${item.title}" loading="lazy" onerror="handleImageError(this, '${escape(item.title)}')">
+          <img src="${item.poster}" alt="${item.title}" loading="lazy" onerror="handleImageError(this, '${encodeURIComponent(item.title)}')">
           <div class="card-status ${statusClass}">${currentStatus}</div>
           <div class="card-rating">★ ${item.rating}</div>
         `;
@@ -510,7 +520,7 @@
       currentSearchQuery = query;
       currentPage = 1;
       rawSearchResults = [];
-      document.getElementById("searchResultsGrid").innerHTML = "";
+      document.getElementById("searchResultsGrid").innerHTML = "<div style='grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;'>Searching titles...</div>";
       document.getElementById("searchTitleText").textContent = `RESULTS FOR "${query.toUpperCase()}"`;
       document.getElementById("searchOverlay").style.display = "flex";
 
@@ -581,7 +591,7 @@
         item.className = "result-card";
         item.onclick = () => openSearchMediaDetail(m.imdbID, m.Title, posterUrl, m.Year, m.Type);
         item.innerHTML = `
-          <img src="${posterUrl}" alt="${m.Title}" onerror="handleImageError(this, '${escape(m.Title)}')">
+          <img src="${posterUrl}" alt="${m.Title}" onerror="handleImageError(this, '${encodeURIComponent(m.Title)}')">
           <div class="type-badge">${m.Type || 'MEDIA'}</div>
           <div class="result-info">
             <div class="result-title">${m.Title}</div>
@@ -721,7 +731,7 @@
             recCard.className = "rec-card";
             recCard.onclick = () => openSearchMediaDetail(m.imdbID, m.Title, posterUrl, m.Year, m.Type);
             recCard.innerHTML = `
-              <img src="${posterUrl}" alt="${m.Title}" onerror="handleImageError(this, '${escape(m.Title)}')">
+              <img src="${posterUrl}" alt="${m.Title}" onerror="handleImageError(this, '${encodeURIComponent(m.Title)}')">
               <div class="rec-title">${m.Title}</div>
             `;
             recRow.appendChild(recCard);
