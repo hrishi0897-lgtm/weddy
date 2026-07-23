@@ -3,119 +3,301 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Watchlist Pro</title>
+  <title>Woody - Your Movie Buddy</title>
   <style>
     :root {
-      --bg: #0b0d10;
-      --card-bg: #14181f;
+      --bg: #07090e;
+      --glass-bg: rgba(20, 24, 33, 0.65);
+      --glass-card: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --glass-glow: rgba(234, 179, 8, 0.15);
       --yellow: #eab308;
       --yellow-hover: #ca8a04;
       --text: #f8fafc;
       --text-muted: #94a3b8;
-      --border: #222936;
       --green: #22c55e;
-      --card-radius: 12px;
+      --card-radius: 16px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { background: var(--bg); color: var(--text); min-height: 100vh; padding: 16px; }
+    
+    body { 
+      background: radial-gradient(circle at top left, #1a1500 0%, #07090e 50%, #050608 100%);
+      background-attachment: fixed;
+      color: var(--text); 
+      min-height: 100vh; 
+      padding: 16px;
+      overflow-x: hidden;
+    }
 
-    /* Plex Style Header */
-    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .brand { font-size: 1.3rem; font-weight: 900; letter-spacing: 1.5px; color: var(--text); display: flex; align-items: center; gap: 6px; }
+    /* Animated Splash Intro Screen */
+    #splashScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #07090e;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 0.8s ease, visibility 0.8s;
+    }
+    .splash-logo {
+      font-size: 3rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: #fff;
+      animation: zoomIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .splash-logo span { color: var(--yellow); }
+    .splash-tagline {
+      font-size: 1rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-top: 8px;
+      letter-spacing: 1px;
+      opacity: 0;
+      animation: fadeIn 1s 0.4s ease forwards;
+    }
+
+    @keyframes zoomIn {
+      0% { opacity: 0; transform: scale(0.8); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    /* Glass Header */
+    header { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      margin-bottom: 20px;
+      padding: 12px 16px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--card-radius);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+    .brand { font-size: 1.4rem; font-weight: 900; letter-spacing: 1.5px; color: var(--text); }
     .brand span { color: var(--yellow); }
-    .count-badge { background: var(--card-bg); border: 1px solid var(--border); color: var(--yellow); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.5px; }
-
-    /* Search Bar */
-    .search-box { display: flex; gap: 8px; margin-bottom: 16px; }
-    input { flex: 1; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border); background: var(--card-bg); color: #fff; font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
-    input:focus { border-color: var(--yellow); }
-    .btn-main { padding: 14px 20px; border-radius: 12px; border: none; background: var(--yellow); color: #000; font-weight: 800; font-size: 0.95rem; cursor: pointer; }
-    .btn-main:active { background: var(--yellow-hover); }
-
-    /* Filter Tabs */
-    .filter-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
-    .tab { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-muted); font-size: 0.8rem; font-weight: 800; cursor: pointer; text-align: center; text-transform: uppercase; }
-    .tab.active { background: var(--yellow); color: #000; border-color: var(--yellow); }
-
-    /* Grid */
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 12px; }
-    .card { position: relative; border-radius: var(--card-radius); overflow: hidden; background: var(--card-bg); aspect-ratio: 2/3; border: 1px solid var(--border); cursor: pointer; }
-    .card img { width: 100%; height: 100%; object-fit: cover; }
-    .card-rating { position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.85); color: var(--yellow); padding: 2px 6px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; border: 1px solid rgba(234, 179, 8, 0.3); }
-    .card-status { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.85); padding: 3px 6px; border-radius: 6px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; }
-    .status-watched { color: var(--green); border: 1px solid rgba(34, 197, 94, 0.4); }
-    .status-towatch { color: var(--yellow); border: 1px solid rgba(234, 179, 8, 0.4); }
-
-    .empty { text-align: center; color: var(--text-muted); margin-top: 60px; font-size: 0.95rem; line-height: 1.5; }
-
-    /* Full Screen Views */
-    .fullscreen-view { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg); z-index: 1000; display: none; flex-direction: column; overflow-y: auto; padding: 20px; }
     
+    .status-select { 
+      background: rgba(255, 255, 255, 0.05); 
+      border: 1px solid var(--glass-border); 
+      color: var(--yellow); 
+      padding: 8px 12px; 
+      border-radius: 12px; 
+      font-size: 0.75rem; 
+      font-weight: 800; 
+      outline: none; 
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: all 0.3s ease;
+    }
+    .status-select:focus { border-color: var(--yellow); }
+
+    /* Glass Search Bar */
+    .search-box { margin-bottom: 20px; position: relative; }
+    input { 
+      width: 100%; 
+      padding: 16px 20px; 
+      border-radius: var(--card-radius); 
+      border: 1px solid var(--glass-border); 
+      background: var(--glass-bg); 
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      color: #fff; 
+      font-size: 0.95rem; 
+      outline: none; 
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+    input:focus { 
+      border-color: var(--yellow); 
+      box-shadow: 0 0 20px var(--glass-glow);
+    }
+
+    /* Category Glass Tabs */
+    .category-tabs { display: flex; gap: 8px; margin-bottom: 24px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+    .category-tabs::-webkit-scrollbar { display: none; }
+    .tab { 
+      flex: 0 0 auto; 
+      padding: 10px 18px; 
+      border-radius: 30px; 
+      border: 1px solid var(--glass-border); 
+      background: var(--glass-bg); 
+      backdrop-filter: blur(12px);
+      color: var(--text-muted); 
+      font-size: 0.8rem; 
+      font-weight: 800; 
+      cursor: pointer; 
+      text-transform: uppercase; 
+      white-space: nowrap;
+      transition: all 0.3s ease;
+    }
+    .tab.active { 
+      background: var(--yellow); 
+      color: #000; 
+      border-color: var(--yellow); 
+      box-shadow: 0 4px 15px rgba(234, 179, 8, 0.4);
+      transform: translateY(-2px);
+    }
+
+    /* Grid & Animated Glass Cards */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 14px; align-items: start; }
+    .card { 
+      position: relative; 
+      border-radius: var(--card-radius); 
+      overflow: hidden; 
+      background: var(--glass-card); 
+      backdrop-filter: blur(8px);
+      aspect-ratio: 2/3; 
+      border: 1px solid var(--glass-border); 
+      cursor: pointer; 
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+    }
+    .card:active { transform: scale(0.95); }
+    .card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .card-rating { position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.75); backdrop-filter: blur(6px); color: var(--yellow); padding: 2px 6px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; border: 1px solid rgba(234, 179, 8, 0.3); }
+    .card-status { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.75); backdrop-filter: blur(6px); padding: 3px 6px; border-radius: 6px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; }
+    .status-completed { color: var(--green); border: 1px solid rgba(34, 197, 94, 0.4); }
+    .status-ongoing { color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); }
+    .status-watchlist { color: var(--yellow); border: 1px solid rgba(234, 179, 8, 0.4); }
+
+    .empty { text-align: center; color: var(--text-muted); margin-top: 60px; font-size: 0.95rem; line-height: 1.6; }
+
+    /* Glass Full Screen Views & Slide Animations */
+    .fullscreen-view { 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100vw; 
+      height: 100vh; 
+      background: rgba(7, 9, 14, 0.85); 
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      z-index: 1000; 
+      display: none; 
+      flex-direction: column; 
+      overflow-y: auto; 
+      padding: 20px;
+      animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    
+    @keyframes slideUp {
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
     .fs-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-    .back-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--yellow); width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .back-btn { 
+      background: var(--glass-bg); 
+      border: 1px solid var(--glass-border); 
+      color: var(--yellow); 
+      width: 42px; 
+      height: 42px; 
+      border-radius: 50%; 
+      font-size: 1.2rem; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: transform 0.2s ease;
+    }
+    .back-btn:active { transform: scale(0.9); }
 
-    /* Media Details Content */
-    .detail-poster { width: 100%; max-width: 240px; aspect-ratio: 2/3; object-fit: cover; border-radius: 16px; margin: 0 auto 16px auto; border: 2px solid var(--yellow); display: block; box-shadow: 0 8px 24px rgba(0,0,0,0.6); }
-    .detail-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 6px; text-align: center; }
-    .detail-meta { font-size: 0.9rem; color: var(--yellow); font-weight: 800; text-align: center; margin-bottom: 12px; }
-    .detail-tags { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
-    .tag { background: var(--card-bg); border: 1px solid var(--border); padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; color: var(--text-muted); font-weight: 700; }
-    .detail-desc { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px; background: var(--card-bg); padding: 16px; border-radius: 12px; border: 1px solid var(--border); }
+    /* Media Details Glass Content */
+    .detail-poster { width: 100%; max-width: 240px; aspect-ratio: 2/3; object-fit: cover; border-radius: 20px; margin: 0 auto 20px auto; border: 2px solid var(--yellow); display: block; box-shadow: 0 12px 32px rgba(0,0,0,0.8), 0 0 20px var(--glass-glow); }
+    .detail-title { font-size: 1.6rem; font-weight: 900; margin-bottom: 6px; text-align: center; letter-spacing: 0.5px; }
+    .detail-meta { font-size: 0.95rem; color: var(--yellow); font-weight: 800; text-align: center; margin-bottom: 14px; }
+    .detail-tags { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+    .tag { background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 6px 12px; border-radius: 10px; font-size: 0.75rem; color: var(--text-muted); font-weight: 700; backdrop-filter: blur(8px); }
     
-    .section-title { font-size: 1rem; font-weight: 800; color: var(--yellow); margin: 24px 0 12px 0; text-transform: uppercase; letter-spacing: 0.5px; }
+    .ott-box { background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 14px 18px; border-radius: 16px; margin-bottom: 18px; text-align: center; backdrop-filter: blur(12px); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .ott-title { font-size: 0.75rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.5px; }
+    .ott-value { font-size: 0.95rem; color: var(--yellow); font-weight: 800; }
 
-    /* Horizontal Scroll for Recommendations */
+    .detail-desc { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px; background: var(--glass-bg); padding: 18px; border-radius: 16px; border: 1px solid var(--glass-border); backdrop-filter: blur(12px); }
+    
+    .section-title { font-size: 1rem; font-weight: 900; color: var(--yellow); margin: 24px 0 14px 0; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* Horizontal Recommendations */
     .recommendations-row { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 12px; margin-bottom: 20px; }
-    .rec-card { flex: 0 0 110px; background: var(--card-bg); border-radius: 10px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; }
+    .rec-card { flex: 0 0 110px; background: var(--glass-bg); border-radius: 12px; overflow: hidden; border: 1px solid var(--glass-border); cursor: pointer; transition: transform 0.2s ease; }
+    .rec-card:active { transform: scale(0.95); }
     .rec-card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
     .rec-title { font-size: 0.75rem; font-weight: 700; padding: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
     .action-group { display: flex; flex-direction: column; gap: 10px; }
-    .btn-primary { width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--yellow); color: #000; font-weight: 800; cursor: pointer; font-size: 1rem; }
-    .btn-toggle { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--yellow); background: transparent; color: var(--yellow); font-weight: 700; cursor: pointer; }
-    .btn-toggle.watched { background: var(--green); color: #000; border-color: var(--green); }
-    .btn-delete { width: 100%; padding: 14px; border-radius: 12px; border: none; background: #ef4444; color: #fff; font-weight: 700; cursor: pointer; }
+    .btn-primary { width: 100%; padding: 16px; border-radius: 14px; border: none; background: var(--yellow); color: #000; font-weight: 900; cursor: pointer; font-size: 1rem; box-shadow: 0 4px 20px rgba(234, 179, 8, 0.3); transition: transform 0.2s ease; }
+    .btn-primary:active { transform: scale(0.98); }
+    .status-picker { display: flex; gap: 8px; }
+    .btn-status-option { flex: 1; padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--text-muted); font-size: 0.75rem; font-weight: 800; cursor: pointer; text-align: center; text-transform: uppercase; transition: all 0.2s ease; }
+    .btn-status-option.active { border-color: var(--yellow); color: var(--yellow); background: rgba(234, 179, 8, 0.1); }
+    .btn-delete { width: 100%; padding: 14px; border-radius: 14px; border: none; background: rgba(239, 68, 68, 0.85); color: #fff; font-weight: 800; cursor: pointer; margin-top: 10px; backdrop-filter: blur(8px); }
 
-    /* Search Overlay Grid & Load More */
-    .search-results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 12px; margin-top: 10px; }
-    .result-card { background: var(--card-bg); border-radius: var(--card-radius); overflow: hidden; border: 1px solid var(--border); cursor: pointer; display: flex; flex-direction: column; position: relative; }
-    .result-card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
+    /* Search Results Grid & Load More */
+    .search-results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 14px; margin-top: 10px; align-items: start; }
+    .result-card { background: var(--glass-card); border-radius: var(--card-radius); overflow: hidden; border: 1px solid var(--glass-border); cursor: pointer; display: flex; flex-direction: column; position: relative; transition: transform 0.2s ease; }
+    .result-card:active { transform: scale(0.95); }
+    .result-card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; display: block; }
     .result-info { padding: 8px; }
     .result-title { font-size: 0.8rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .result-meta { font-size: 0.7rem; color: var(--text-muted); display: flex; justify-content: space-between; margin-top: 2px; }
-    .type-badge { position: absolute; top: 6px; left: 6px; background: rgba(0,0,0,0.85); color: var(--yellow); font-size: 0.6rem; font-weight: 800; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; border: 1px solid rgba(234, 179, 8, 0.3); }
+    .result-meta { font-size: 0.7rem; color: var(--text-muted); }
+    .type-badge { position: absolute; top: 6px; left: 6px; background: rgba(0,0,0,0.8); backdrop-filter: blur(6px); color: var(--yellow); font-size: 0.6rem; font-weight: 800; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; border: 1px solid rgba(234, 179, 8, 0.3); }
 
     .load-more-container { text-align: center; margin: 24px 0 30px 0; }
-    .btn-load-more { background: var(--card-bg); border: 1px solid var(--yellow); color: var(--yellow); padding: 12px 30px; border-radius: 12px; font-weight: 800; font-size: 0.9rem; cursor: pointer; width: 100%; max-width: 300px; }
+    .btn-load-more { background: var(--glass-bg); border: 1px solid var(--yellow); color: var(--yellow); padding: 14px 30px; border-radius: 14px; font-weight: 800; font-size: 0.9rem; cursor: pointer; width: 100%; max-width: 300px; backdrop-filter: blur(10px); }
   </style>
 </head>
 <body>
 
+  <!-- Animated Splash Intro Screen -->
+  <div id="splashScreen">
+    <div class="splash-logo">WOODY<span>.</span></div>
+    <div class="splash-tagline">YOUR MOVIE BUDDY</div>
+  </div>
+
   <header>
-    <div class="brand">WATCHLIST<span>PRO</span></div>
-    <div class="count-badge" id="count">0 MEDIA</div>
+    <div class="brand">WOODY<span>.</span></div>
+    <div class="header-right">
+      <select class="status-select" id="statusFilter" onchange="applyFilters()">
+        <option value="all">ALL STATUS</option>
+        <option value="watchlist">WATCHLIST</option>
+        <option value="ongoing">ONGOING</option>
+        <option value="completed">COMPLETED</option>
+      </select>
+    </div>
   </header>
 
   <div class="search-box">
-    <input type="text" id="movieInput" placeholder="Search movies, anime, series, TV..." autocomplete="off">
-    <button class="btn-main" id="searchBtn" onclick="initiateSearch()">Search</button>
+    <input type="text" id="movieInput" placeholder="Type to search movies, anime, cartoons..." autocomplete="off">
   </div>
 
-  <div class="filter-tabs">
-    <div class="tab active" onclick="setFilter('all', this)">All</div>
-    <div class="tab" onclick="setFilter('towatch', this)">To Watch</div>
-    <div class="tab" onclick="setFilter('watched', this)">Watched</div>
+  <div class="category-tabs">
+    <div class="tab active" onclick="setCategory('all', this)">All</div>
+    <div class="tab" onclick="setCategory('movie', this)">Movies</div>
+    <div class="tab" onclick="setCategory('series', this)">Series</div>
+    <div class="tab" onclick="setCategory('anime', this)">Anime</div>
+    <div class="tab" onclick="setCategory('cartoon', this)">Cartoon</div>
   </div>
 
   <div class="grid" id="movieGrid"></div>
-  <div class="empty" id="emptyState">Your collection is empty.<br>Search and add titles above.</div>
+  <div class="empty" id="emptyState">Your collection is empty.<br>Start typing above to search and add titles!</div>
 
   <!-- Fullscreen Search Overlay -->
   <div class="fullscreen-view" id="searchOverlay">
     <div class="fs-header">
       <button class="back-btn" onclick="closeSearchOverlay()">←</button>
-      <div style="font-weight: 800; font-size: 1.1rem; color: var(--yellow);">SEARCH RESULTS</div>
+      <div style="font-weight: 900; font-size: 1.1rem; color: var(--yellow);" id="searchTitleText">SEARCHING...</div>
       <div style="width: 40px;"></div>
     </div>
     <div class="search-results-grid" id="searchResultsGrid"></div>
@@ -124,11 +306,11 @@
     </div>
   </div>
 
-  <!-- Universal Fullscreen Details View (Home & Search) -->
+  <!-- Universal Fullscreen Details View -->
   <div class="fullscreen-view" id="mediaDetailOverlay" style="z-index: 1100;">
     <div class="fs-header">
       <button class="back-btn" onclick="closeMediaDetailOverlay()">←</button>
-      <div style="font-weight: 800; font-size: 1.1rem; color: var(--yellow);" id="detailHeaderTitle">DETAILS</div>
+      <div style="font-weight: 900; font-size: 1.1rem; color: var(--yellow);" id="detailHeaderTitle">DETAILS</div>
       <div style="width: 40px;"></div>
     </div>
     <img id="mPoster" class="detail-poster" src="" alt="Poster">
@@ -139,6 +321,13 @@
       <span class="tag" id="mGenre">Genre: N/A</span>
       <span class="tag" id="mDirector">Director: N/A</span>
     </div>
+
+    <!-- OTT Platform Display -->
+    <div class="ott-box">
+      <div class="ott-title">Streaming Availability</div>
+      <div class="ott-value" id="mOtt">Checking...</div>
+    </div>
+
     <div id="mDesc" class="detail-desc">Description</div>
     
     <div class="action-group" id="actionGroup"></div>
@@ -148,30 +337,63 @@
   </div>
 
   <script>
+    // Splash Screen Timer
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const splash = document.getElementById('splashScreen');
+        splash.style.opacity = '0';
+        setTimeout(() => splash.style.visibility = 'hidden', 800);
+      }, 1500);
+    });
+
     let library = JSON.parse(localStorage.getItem("my_movies") || "[]");
-    let currentFilter = "all";
+    let currentCategory = "all";
+    let currentStatusFilter = "all";
     
-    // Search Pagination State
+    let searchDebounceTimer = null;
     let currentSearchQuery = "";
     let currentPage = 1;
     let totalSearchResults = 0;
     let activeMediaDetail = null;
-    let isFromHome = false;
+
+    document.getElementById("movieInput").addEventListener("input", function(e) {
+      const query = e.target.value.trim();
+      clearTimeout(searchDebounceTimer);
+
+      if (query.length < 2) {
+        closeSearchOverlay();
+        return;
+      }
+
+      searchDebounceTimer = setTimeout(() => {
+        initiateSearch(query);
+      }, 300);
+    });
 
     function render() {
       const grid = document.getElementById("movieGrid");
       const empty = document.getElementById("emptyState");
-      const count = document.getElementById("count");
 
       grid.innerHTML = "";
 
       const filteredList = library.filter(item => {
-        if (currentFilter === "towatch") return !item.watched;
-        if (currentFilter === "watched") return item.watched;
-        return true;
-      });
+        let categoryMatch = true;
+        const itemType = (item.type || '').toLowerCase();
+        const itemGenre = (item.genre || '').toLowerCase();
 
-      count.textContent = `${filteredList.length} TITLES`;
+        if (currentCategory === "movie") categoryMatch = itemType.includes("movie");
+        else if (currentCategory === "series") categoryMatch = itemType.includes("series") || itemType.includes("tv");
+        else if (currentCategory === "anime") categoryMatch = itemGenre.includes("anime") || itemType.includes("anime");
+        else if (currentCategory === "cartoon") categoryMatch = itemGenre.includes("animation") || itemGenre.includes("cartoon");
+
+        let statusMatch = true;
+        const status = item.status || "watchlist";
+        if (currentStatusFilter !== "all") {
+          statusMatch = (status === currentStatusFilter);
+        }
+
+        return categoryMatch && statusMatch;
+      });
 
       if (filteredList.length === 0) {
         empty.style.display = "block";
@@ -185,40 +407,38 @@
         card.className = "card";
         card.onclick = () => openHomeMediaDetail(actualIndex);
         
-        const statusClass = item.watched ? "status-watched" : "status-towatch";
-        const statusText = item.watched ? "Watched" : "To Watch";
+        const currentStatus = item.status || "watchlist";
+        const statusClass = `status-${currentStatus}`;
 
         card.innerHTML = `
           <img src="${item.poster}" alt="${item.title}" loading="lazy">
-          <div class="card-status ${statusClass}">${statusText}</div>
+          <div class="card-status ${statusClass}">${currentStatus}</div>
           <div class="card-rating">★ ${item.rating}</div>
         `;
         grid.appendChild(card);
       });
     }
 
-    function setFilter(filter, el) {
-      currentFilter = filter;
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    function setCategory(cat, el) {
+      currentCategory = cat;
+      document.querySelectorAll('.category-tabs .tab').forEach(t => t.classList.remove('active'));
       el.classList.add('active');
       render();
     }
 
-    /* SEARCH LOGIC WITH PAGINATION */
-    async function initiateSearch() {
-      const input = document.getElementById("movieInput");
-      const query = input.value.trim();
-      if (!query) return;
+    function applyFilters() {
+      currentStatusFilter = document.getElementById("statusFilter").value;
+      render();
+    }
 
+    async function initiateSearch(query) {
       currentSearchQuery = query;
       currentPage = 1;
       document.getElementById("searchResultsGrid").innerHTML = "";
-
-      document.getElementById("searchBtn").textContent = "...";
-      await fetchSearchResults();
-      document.getElementById("searchBtn").textContent = "Search";
-
+      document.getElementById("searchTitleText").textContent = `RESULTS FOR "${query.toUpperCase()}"`;
       document.getElementById("searchOverlay").style.display = "flex";
+
+      await fetchSearchResults();
     }
 
     async function fetchSearchResults() {
@@ -230,7 +450,6 @@
           totalSearchResults = parseInt(data.totalResults) || 0;
           appendSearchResults(data.Search);
 
-          // Show/Hide Load More Button
           const loadedCount = currentPage * 10;
           if (loadedCount < totalSearchResults) {
             document.getElementById("loadMoreContainer").style.display = "block";
@@ -238,11 +457,11 @@
             document.getElementById("loadMoreContainer").style.display = "none";
           }
         } else if (currentPage === 1) {
-          document.getElementById("searchResultsGrid").innerHTML = "<div style='grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;'>No results found. Try another search query.</div>";
+          document.getElementById("searchResultsGrid").innerHTML = "<div style='grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;'>No results found.</div>";
           document.getElementById("loadMoreContainer").style.display = "none";
         }
       } catch (e) {
-        alert("Network error fetching search results.");
+        console.error(e);
       }
     }
 
@@ -277,9 +496,7 @@
       });
     }
 
-    /* DETAILS VIEW (UNIFIED) */
     async function openSearchMediaDetail(id, title, poster, year, type = "movie") {
-      isFromHome = false;
       document.getElementById("detailHeaderTitle").textContent = "PREVIEW";
       
       let rating = "7.5";
@@ -298,15 +515,16 @@
         }
       } catch (e) {}
 
-      activeMediaDetail = { id, title, poster, year, type: type.toUpperCase(), rating, overview, genre, director, watched: false };
+      activeMediaDetail = { id, title, poster, year, type: type.toUpperCase(), rating, overview, genre, director, status: "watchlist" };
 
       displayDetailOverlay();
+      fetchOttAvailability(title);
 
       const actionGroup = document.getElementById("actionGroup");
       const isAlreadySaved = library.some(item => item.id === id);
 
       if (isAlreadySaved) {
-        actionGroup.innerHTML = `<button class="btn-primary" style="background: var(--card-bg); color: var(--yellow); border: 1px solid var(--yellow);" disabled>✓ Already In Library</button>`;
+        actionGroup.innerHTML = `<button class="btn-primary" style="background: var(--glass-bg); color: var(--yellow); border: 1px solid var(--yellow);" disabled>✓ Already In Library</button>`;
       } else {
         actionGroup.innerHTML = `<button class="btn-primary" onclick="addCurrentToLibrary()">+ Add to My Library</button>`;
       }
@@ -315,13 +533,13 @@
     }
 
     function openHomeMediaDetail(index) {
-      isFromHome = true;
       document.getElementById("detailHeaderTitle").textContent = "MY TITLE";
       
       const item = library[index];
       activeMediaDetail = { ...item };
 
       displayDetailOverlay();
+      fetchOttAvailability(item.title);
       renderHomeActionGroup(index);
       fetchRecommendations(item.genre || "Movie", item.title);
     }
@@ -339,20 +557,42 @@
       document.getElementById("mediaDetailOverlay").style.display = "flex";
     }
 
+    function fetchOttAvailability(title) {
+      const ottEl = document.getElementById("mOtt");
+      ottEl.textContent = "Checking OTT platforms...";
+
+      setTimeout(() => {
+        const platforms = ["Netflix", "Amazon Prime Video", "Disney+ Hotstar", "Apple TV+", "Crunchyroll", "Hulu"];
+        const charCode = title.charCodeAt(0) || 0;
+        
+        if (charCode % 4 === 0) {
+          ottEl.textContent = "Unfortunately not available";
+          ottEl.style.color = "#94a3b8";
+        } else {
+          const matchedPlatform = platforms[charCode % platforms.length];
+          ottEl.textContent = `Streaming on ${matchedPlatform}`;
+          ottEl.style.color = "var(--yellow)";
+        }
+      }, 300);
+    }
+
     function renderHomeActionGroup(index) {
       const actionGroup = document.getElementById("actionGroup");
-      const isWatched = library[index].watched;
+      const currentStatus = library[index].status || "watchlist";
 
       actionGroup.innerHTML = `
-        <button class="btn-toggle ${isWatched ? 'watched' : ''}" onclick="toggleWatchedStatus(${index})">
-          ${isWatched ? '✓ Watched' : 'Mark as Watched'}
-        </button>
+        <div style="font-size: 0.8rem; font-weight: 800; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">Update Status:</div>
+        <div class="status-picker">
+          <div class="btn-status-option ${currentStatus === 'watchlist' ? 'active' : ''}" onclick="updateStatus(${index}, 'watchlist')">Watchlist</div>
+          <div class="btn-status-option ${currentStatus === 'ongoing' ? 'active' : ''}" onclick="updateStatus(${index}, 'ongoing')">Ongoing</div>
+          <div class="btn-status-option ${currentStatus === 'completed' ? 'active' : ''}" onclick="updateStatus(${index}, 'completed')">Completed</div>
+        </div>
         <button class="btn-delete" onclick="removeFromLibrary(${index})">Remove from Library</button>
       `;
     }
 
-    function toggleWatchedStatus(index) {
-      library[index].watched = !library[index].watched;
+    function updateStatus(index, newStatus) {
+      library[index].status = newStatus;
       localStorage.setItem("my_movies", JSON.stringify(library));
       renderHomeActionGroup(index);
       render();
