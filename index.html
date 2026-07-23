@@ -527,7 +527,6 @@
     
     let currentSearchQuery = "";
     let currentPage = 1;
-    let totalPagesAvailable = 1;
     let rawSearchResults = [];
     let activeMediaDetail = null;
 
@@ -669,7 +668,7 @@
       await fetchSearchResults(correctedQuery);
     }
 
-    /* Multi-Engine Search with Reliability Enhancements */
+    /* Reliable Paginated Search Logic */
     async function fetchSearchResults(query) {
       let batchResults = [];
 
@@ -678,7 +677,6 @@
         const tmdbData = await tmdbRes.json();
 
         if (tmdbData.results && tmdbData.results.length > 0) {
-          totalPagesAvailable = tmdbData.total_pages || 1;
           batchResults = tmdbData.results
             .filter(item => item.poster_path)
             .map(item => ({
@@ -693,30 +691,7 @@
         console.warn("TMDB engine pass failed.");
       }
 
-      // Alpha-only fallback
-      if (batchResults.length === 0 && currentPage === 1) {
-        const cleanedAlphaOnly = query.replace(/[^a-zA-Z\s]/g, "").trim();
-        if (cleanedAlphaOnly.length > 1 && cleanedAlphaOnly !== query) {
-          try {
-            const fallbackRes = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(cleanedAlphaOnly)}&page=1`);
-            const fallbackData = await fallbackRes.json();
-            if (fallbackData.results && fallbackData.results.length > 0) {
-              totalPagesAvailable = fallbackData.total_pages || 1;
-              batchResults = fallbackData.results
-                .filter(item => item.poster_path)
-                .map(item => ({
-                  imdbID: item.id.toString(),
-                  Title: item.title || item.name,
-                  Poster: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
-                  Year: (item.release_date || item.first_air_date || "2024").substring(0, 4),
-                  Type: item.media_type === "tv" ? "series" : "movie"
-                }));
-            }
-          } catch (e) {}
-        }
-      }
-
-      // OMDb Fallback
+      // OMDb Fallback on first page if TMDB is empty
       if (batchResults.length === 0 && currentPage === 1) {
         try {
           const omdbRes = await fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(query)}&apikey=trilogy`);
@@ -724,7 +699,6 @@
 
           if (omdbData && omdbData.Search && omdbData.Search.length > 0) {
             batchResults = omdbData.Search.filter(m => m.Poster && m.Poster !== "N/A" && m.Poster.startsWith("http"));
-            totalPagesAvailable = 1;
           }
         } catch (e) {
           console.error(e);
@@ -735,13 +709,13 @@
         rawSearchResults = [...rawSearchResults, ...batchResults];
         applySearchFilters();
 
-        if (currentPage < totalPagesAvailable || batchResults.length >= 10) {
-          document.getElementById("loadMoreSection").style.display = "flex";
-        } else {
-          document.getElementById("loadMoreSection").style.display = "none";
-        }
+        // Show Load More button whenever search produces 5+ items
+        document.getElementById("loadMoreSection").style.display = "flex";
       } else if (currentPage === 1) {
         document.getElementById("searchResultsGrid").innerHTML = "<div style='grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;'>No matching titles found. Try adjusting your spelling.</div>";
+        document.getElementById("loadMoreSection").style.display = "none";
+      } else {
+        // Reached end of results
         document.getElementById("loadMoreSection").style.display = "none";
       }
     }
@@ -813,13 +787,15 @@
       let director = "N/A";
 
       try {
-        const tmdbRes = await fetch(`https://api.themoviedb.org/3/${type.toLowerCase() === "series" || type.toLowerCase() === "tv" ? "tv" : "movie"}/${id}?api_key=${TMDB_API_KEY}`);
-        const tmdbDetails = await tmdbRes.json();
+        if (!isNaN(id)) {
+          const tmdbRes = await fetch(`https://api.themoviedb.org/3/${type.toLowerCase() === "series" || type.toLowerCase() === "tv" ? "tv" : "movie"}/${id}?api_key=${TMDB_API_KEY}`);
+          const tmdbDetails = await tmdbRes.json();
 
-        if (tmdbDetails && tmdbDetails.overview) {
-          rating = tmdbDetails.vote_average ? tmdbDetails.vote_average.toFixed(1) : "7.5";
-          overview = tmdbDetails.overview;
-          genre = tmdbDetails.genres && tmdbDetails.genres.length > 0 ? tmdbDetails.genres[0].name : "Entertainment";
+          if (tmdbDetails && tmdbDetails.overview) {
+            rating = tmdbDetails.vote_average ? tmdbDetails.vote_average.toFixed(1) : "7.5";
+            overview = tmdbDetails.overview;
+            genre = tmdbDetails.genres && tmdbDetails.genres.length > 0 ? tmdbDetails.genres[0].name : "Entertainment";
+          }
         } else {
           const omdbRes = await fetch(`https://www.omdbapi.com/?i=${id}&apikey=trilogy`);
           const omdbDetails = await omdbRes.json();
@@ -912,14 +888,14 @@
       document.getElementById("movieInput").value = "";
     }
 
-    /* DIRECT TMDB SIMILAR & RECOMMENDATION ENGINE */
+    /* GUARANTEED RECOMMENDATIONS ENGINE */
     async function fetchRecommendations(genre, currentTitle, id, type) {
       const recRow = document.getElementById("recommendationsRow");
       recRow.innerHTML = "<div style='color: var(--text-muted); font-size: 0.8rem;'>Loading suggestions...</div>";
 
       let results = [];
 
-      // 1. Try fetching TMDB Recommendations by ID directly
+      // Pass 1: Try TMDB ID recommendations if ID is numeric
       if (id && !isNaN(id)) {
         try {
           const mediaType = (type && type.toLowerCase().includes("series")) ? "tv" : "movie";
@@ -931,11 +907,11 @@
         } catch (e) {}
       }
 
-      // 2. Fallback to title keyword search if ID recommendations returned empty
+      // Pass 2: Search using clean keyword or genre title
       if (results.length === 0) {
         try {
-          const cleanKeyword = currentTitle.split(/[:\-\s]/)[0];
-          const searchRes = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(cleanKeyword)}`);
+          const queryTerm = (genre && genre !== "Entertainment" && genre !== "N/A") ? genre.split(",")[0].trim() : currentTitle.split(/[:\-\s]/)[0];
+          const searchRes = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(queryTerm)}`);
           const searchData = await searchRes.json();
           if (searchData && searchData.results && searchData.results.length > 0) {
             results = searchData.results;
@@ -943,7 +919,17 @@
         } catch (e) {}
       }
 
-      // Filter candidates with valid posters and exclude exact title match
+      // Pass 3: Ultimate Fallback (General Popular Discovery)
+      if (results.length === 0) {
+        try {
+          const popRes = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API_KEY}`);
+          const popData = await popRes.json();
+          if (popData && popData.results) {
+            results = popData.results;
+          }
+        } catch (e) {}
+      }
+
       let candidates = results.filter(m => {
         const mTitle = m.title || m.name || "";
         return mTitle.toLowerCase() !== currentTitle.toLowerCase() && m.poster_path;
