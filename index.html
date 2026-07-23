@@ -334,35 +334,46 @@
     .result-meta { font-size: 0.65rem; color: var(--text-muted); }
     .type-badge { position: absolute; top: 6px; left: 6px; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); color: var(--yellow); font-size: 0.55rem; font-weight: 800; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; border: 1px solid rgba(234, 179, 8, 0.3); }
 
-    /* Non-Overlapping Load More Section */
-    .load-more-section { 
-      display: flex; 
-      justify-content: center; 
+    /* Numbered Pagination Section */
+    .pagination-container {
+      display: flex;
+      justify-content: center;
       align-items: center;
-      margin: 30px auto 60px auto; 
-      width: 100%; 
+      gap: 12px;
+      margin: 24px auto 40px auto;
+      width: 100%;
       position: relative;
       z-index: 30;
     }
-    .btn-load-more { 
-      background: var(--glass-bg); 
-      border: 2px solid var(--yellow); 
-      color: var(--yellow); 
-      padding: 16px 32px; 
-      border-radius: 14px; 
-      font-weight: 900; 
-      font-size: 0.9rem; 
-      cursor: pointer; 
-      width: 100%; 
-      max-width: 280px; 
-      backdrop-filter: blur(10px); 
+    .btn-page {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      color: var(--yellow);
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 0.8rem;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      box-shadow: 0 4px 20px rgba(234, 179, 8, 0.2);
-      transition: transform 0.2s ease, background 0.2s ease;
-      text-transform: uppercase;
+      transition: transform 0.2s ease, background 0.2s ease, opacity 0.2s ease;
+    }
+    .btn-page:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      border-color: var(--glass-border);
+      color: var(--text-muted);
+    }
+    .btn-page:not(:disabled):active {
+      transform: scale(0.92);
+      background: rgba(234, 179, 8, 0.15);
+    }
+    .page-info {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--text);
       letter-spacing: 0.5px;
     }
-    .btn-load-more:active { transform: scale(0.95); background: rgba(234, 179, 8, 0.2); }
   </style>
 </head>
 <body>
@@ -452,9 +463,11 @@
 
     <div class="search-results-grid" id="searchResultsGrid"></div>
 
-    <!-- Non-Overlapping Load More Section -->
-    <div class="load-more-section" id="loadMoreSection" style="display: none;">
-      <button class="btn-load-more" id="loadMoreBtn" onclick="loadMoreResults()">Load More Results</button>
+    <!-- Page Controls (Max 12 posters per page) -->
+    <div class="pagination-container" id="paginationContainer" style="display: none;">
+      <button class="btn-page" id="prevPageBtn" onclick="changeSearchPage(-1)">‹ Prev</button>
+      <span class="page-info" id="pageInfoText">Page 1 of 1</span>
+      <button class="btn-page" id="nextPageBtn" onclick="changeSearchPage(1)">Next ›</button>
     </div>
   </div>
 
@@ -526,8 +539,10 @@
     let currentStatusFilter = "all";
     
     let currentSearchQuery = "";
-    let currentPage = 1;
     let rawSearchResults = [];
+    let activeFilteredResults = [];
+    let currentPage = 1;
+    const RESULTS_PER_PAGE = 12;
     let activeMediaDetail = null;
 
     function focusMainSearch() {
@@ -618,7 +633,7 @@
       render();
     }
 
-    /* Keyboard Proximity & Typo Auto-Corrector */
+    /* Keyboard Proximity & Typo Auto-Corrector Engine */
     function sanitizeAndSpellCheckQuery(query) {
       let q = query.trim().toLowerCase();
 
@@ -663,22 +678,31 @@
       document.getElementById("searchResultsGrid").innerHTML = "<div style='grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;'>Searching database...</div>";
       document.getElementById("searchTitleText").textContent = `RESULTS FOR "${correctedQuery.toUpperCase()}"`;
       document.getElementById("searchOverlay").style.display = "flex";
-      document.getElementById("loadMoreSection").style.display = "none";
+      document.getElementById("paginationContainer").style.display = "none";
 
       await fetchSearchResults(correctedQuery);
     }
 
-    /* Reliable Paginated Search Logic */
+    /* Strict Search Strategy: Excludes any entry missing a valid poster */
     async function fetchSearchResults(query) {
-      let batchResults = [];
+      let results = [];
 
       try {
-        const tmdbRes = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&page=${currentPage}`);
-        const tmdbData = await tmdbRes.json();
+        const [p1Res, p2Res] = await Promise.all([
+          fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&page=1`),
+          fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&page=2`)
+        ]);
 
-        if (tmdbData.results && tmdbData.results.length > 0) {
-          batchResults = tmdbData.results
-            .filter(item => item.poster_path)
+        const [p1Data, p2Data] = await Promise.all([p1Res.json(), p2Res.json()]);
+
+        const combined = [
+          ...(p1Data.results || []),
+          ...(p2Data.results || [])
+        ];
+
+        if (combined.length > 0) {
+          results = combined
+            .filter(item => item.poster_path && item.poster_path !== "null" && item.poster_path !== null) // Strictly require poster
             .map(item => ({
               imdbID: item.id.toString(),
               Title: item.title || item.name,
@@ -691,48 +715,34 @@
         console.warn("TMDB engine pass failed.");
       }
 
-      // OMDb Fallback on first page if TMDB is empty
-      if (batchResults.length === 0 && currentPage === 1) {
+      // OMDb Fallback if TMDB yields zero results
+      if (results.length === 0) {
         try {
           const omdbRes = await fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(query)}&apikey=trilogy`);
           const omdbData = await omdbRes.json();
 
           if (omdbData && omdbData.Search && omdbData.Search.length > 0) {
-            batchResults = omdbData.Search.filter(m => m.Poster && m.Poster !== "N/A" && m.Poster.startsWith("http"));
+            results = omdbData.Search.filter(m => m.Poster && m.Poster !== "N/A" && m.Poster.startsWith("http"));
           }
         } catch (e) {
           console.error(e);
         }
       }
 
-      if (batchResults.length > 0) {
-        rawSearchResults = [...rawSearchResults, ...batchResults];
+      if (results.length > 0) {
+        rawSearchResults = results;
         applySearchFilters();
-
-        // Show Load More button whenever search produces 5+ items
-        document.getElementById("loadMoreSection").style.display = "flex";
-      } else if (currentPage === 1) {
-        document.getElementById("searchResultsGrid").innerHTML = "<div style='grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;'>No matching titles found. Try adjusting your spelling.</div>";
-        document.getElementById("loadMoreSection").style.display = "none";
       } else {
-        // Reached end of results
-        document.getElementById("loadMoreSection").style.display = "none";
+        document.getElementById("searchResultsGrid").innerHTML = "<div style='grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;'>No matching titles with posters found. Try adjusting your spelling.</div>";
+        document.getElementById("paginationContainer").style.display = "none";
       }
-    }
-
-    async function loadMoreResults() {
-      currentPage++;
-      const btn = document.getElementById("loadMoreBtn");
-      btn.textContent = "Loading...";
-      await fetchSearchResults(currentSearchQuery);
-      btn.textContent = "Load More Results";
     }
 
     function applySearchFilters() {
       const typeFilter = document.getElementById("searchTypeFilter").value;
       const yearFilter = document.getElementById("searchYearFilter").value;
 
-      let filtered = rawSearchResults.filter(m => {
+      activeFilteredResults = rawSearchResults.filter(m => {
         let typeMatch = true;
         if (typeFilter !== "all") {
           typeMatch = (m.Type || '').toLowerCase() === typeFilter;
@@ -748,19 +758,31 @@
         return typeMatch && yearMatch;
       });
 
-      renderSearchResults(filtered);
+      currentPage = 1;
+      renderCurrentSearchPage();
     }
 
-    function renderSearchResults(results) {
+    /* Renders max 12 posters per page */
+    function renderCurrentSearchPage() {
       const resultsGrid = document.getElementById("searchResultsGrid");
+      const pagination = document.getElementById("paginationContainer");
+
       resultsGrid.innerHTML = "";
 
-      if (results.length === 0) {
+      if (activeFilteredResults.length === 0) {
         resultsGrid.innerHTML = "<div style='grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;'>No titles matching selected filters.</div>";
+        pagination.style.display = "none";
         return;
       }
 
-      results.forEach(m => {
+      const totalPages = Math.ceil(activeFilteredResults.length / RESULTS_PER_PAGE);
+      if (currentPage > totalPages) currentPage = totalPages;
+
+      const startIndex = (currentPage - 1) * RESULTS_PER_PAGE;
+      const endIndex = startIndex + RESULTS_PER_PAGE;
+      const currentBatch = activeFilteredResults.slice(startIndex, endIndex);
+
+      currentBatch.forEach(m => {
         const item = document.createElement("div");
         item.className = "result-card";
         item.onclick = () => openSearchMediaDetail(m.imdbID, m.Title, m.Poster, m.Year, m.Type);
@@ -776,6 +798,26 @@
         `;
         resultsGrid.appendChild(item);
       });
+
+      // Update Pagination Controls
+      if (totalPages > 1) {
+        pagination.style.display = "flex";
+        document.getElementById("pageInfoText").textContent = `Page ${currentPage} of ${totalPages}`;
+        document.getElementById("prevPageBtn").disabled = (currentPage === 1);
+        document.getElementById("nextPageBtn").disabled = (currentPage === totalPages);
+      } else {
+        pagination.style.display = "none";
+      }
+    }
+
+    function changeSearchPage(direction) {
+      const totalPages = Math.ceil(activeFilteredResults.length / RESULTS_PER_PAGE);
+      currentPage += direction;
+      if (currentPage < 1) currentPage = 1;
+      if (currentPage > totalPages) currentPage = totalPages;
+
+      renderCurrentSearchPage();
+      document.getElementById("searchOverlay").scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     async function openSearchMediaDetail(id, title, poster, year, type = "movie") {
@@ -888,14 +930,14 @@
       document.getElementById("movieInput").value = "";
     }
 
-    /* GUARANTEED RECOMMENDATIONS ENGINE */
+    /* ROBUST GUARANTEED RECOMMENDATIONS SYSTEM */
     async function fetchRecommendations(genre, currentTitle, id, type) {
       const recRow = document.getElementById("recommendationsRow");
       recRow.innerHTML = "<div style='color: var(--text-muted); font-size: 0.8rem;'>Loading suggestions...</div>";
 
       let results = [];
 
-      // Pass 1: Try TMDB ID recommendations if ID is numeric
+      // Tier 1: Try TMDB numerical ID recommendations
       if (id && !isNaN(id)) {
         try {
           const mediaType = (type && type.toLowerCase().includes("series")) ? "tv" : "movie";
@@ -907,7 +949,7 @@
         } catch (e) {}
       }
 
-      // Pass 2: Search using clean keyword or genre title
+      // Tier 2: Search keyword/first word of title if ID yields empty
       if (results.length === 0) {
         try {
           const queryTerm = (genre && genre !== "Entertainment" && genre !== "N/A") ? genre.split(",")[0].trim() : currentTitle.split(/[:\-\s]/)[0];
@@ -919,7 +961,7 @@
         } catch (e) {}
       }
 
-      // Pass 3: Ultimate Fallback (General Popular Discovery)
+      // Tier 3: Universal Fallback (Popular movies)
       if (results.length === 0) {
         try {
           const popRes = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API_KEY}`);
@@ -932,13 +974,13 @@
 
       let candidates = results.filter(m => {
         const mTitle = m.title || m.name || "";
-        return mTitle.toLowerCase() !== currentTitle.toLowerCase() && m.poster_path;
+        return mTitle.toLowerCase() !== currentTitle.toLowerCase() && m.poster_path && m.poster_path !== "null" && m.poster_path !== null;
       });
 
       if (candidates.length > 0) {
         recRow.innerHTML = "";
         
-        // Random Shuffle
+        // Random Shuffle for variety
         for (let i = candidates.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
           [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
