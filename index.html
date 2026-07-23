@@ -250,14 +250,14 @@
       left: 0; 
       width: 100vw; 
       height: 100vh; 
-      background: rgba(7, 9, 14, 0.95); 
+      background: rgba(7, 9, 14, 0.96); 
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
       z-index: 1000; 
       display: none; 
       flex-direction: column; 
       overflow-y: auto; 
-      padding: 20px;
+      padding: 20px 20px 40px 20px;
       will-change: transform, opacity;
       animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
@@ -338,26 +338,31 @@
     .load-more-section { 
       display: flex; 
       justify-content: center; 
-      padding: 24px 0 40px 0; 
+      align-items: center;
+      margin: 30px auto 60px auto; 
       width: 100%; 
+      position: relative;
+      z-index: 30;
     }
     .btn-load-more { 
       background: var(--glass-bg); 
-      border: 1px solid var(--yellow); 
+      border: 2px solid var(--yellow); 
       color: var(--yellow); 
-      padding: 14px 28px; 
+      padding: 16px 32px; 
       border-radius: 14px; 
-      font-weight: 800; 
-      font-size: 0.85rem; 
+      font-weight: 900; 
+      font-size: 0.9rem; 
       cursor: pointer; 
       width: 100%; 
       max-width: 280px; 
       backdrop-filter: blur(10px); 
       -webkit-backdrop-filter: blur(10px);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 20px rgba(234, 179, 8, 0.2);
       transition: transform 0.2s ease, background 0.2s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
-    .btn-load-more:active { transform: scale(0.95); background: rgba(234, 179, 8, 0.15); }
+    .btn-load-more:active { transform: scale(0.95); background: rgba(234, 179, 8, 0.2); }
   </style>
 </head>
 <body>
@@ -614,11 +619,10 @@
       render();
     }
 
-    /* Advanced Keyboard Proximity & Typo Auto-Corrector Engine */
+    /* Keyboard Proximity & Typo Auto-Corrector */
     function sanitizeAndSpellCheckQuery(query) {
       let q = query.trim().toLowerCase();
 
-      // Keyboard proximity swaps (e.g. 5 -> t, 1 -> i, 0 -> o, 3 -> e, 4 -> r, 7 -> u, 8 -> i)
       const keyNeighborMap = {
         '5': 't', '1': 'i', '0': 'o', '3': 'e', '4': 'r', '7': 'u', '8': 'i', '@': 'a', '$': 's'
       };
@@ -629,7 +633,6 @@
         normalized += keyNeighborMap[ch] || ch;
       }
 
-      // Pre-mapped common titles dictionary for exact fuzzy matches
       const dictionary = {
         "5hor": "thor",
         "thorr": "thor",
@@ -666,12 +669,11 @@
       await fetchSearchResults(correctedQuery);
     }
 
-    /* Multi-Engine Search with Automatic Query Fallbacks */
+    /* Multi-Engine Search with Reliability Enhancements */
     async function fetchSearchResults(query) {
       let batchResults = [];
 
       try {
-        // Search Pass 1: TMDB Multi Search
         const tmdbRes = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&page=${currentPage}`);
         const tmdbData = await tmdbRes.json();
 
@@ -688,10 +690,10 @@
             }));
         }
       } catch (e) {
-        console.warn("TMDB engine pass failed, attempting fallback.");
+        console.warn("TMDB engine pass failed.");
       }
 
-      // Search Pass 2: Clean letters fallback if numbers were typed (e.g. 5hor -> hor -> thor)
+      // Alpha-only fallback
       if (batchResults.length === 0 && currentPage === 1) {
         const cleanedAlphaOnly = query.replace(/[^a-zA-Z\s]/g, "").trim();
         if (cleanedAlphaOnly.length > 1 && cleanedAlphaOnly !== query) {
@@ -714,7 +716,7 @@
         }
       }
 
-      // Search Pass 3: OMDb Fallback
+      // OMDb Fallback
       if (batchResults.length === 0 && currentPage === 1) {
         try {
           const omdbRes = await fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(query)}&apikey=trilogy`);
@@ -733,7 +735,7 @@
         rawSearchResults = [...rawSearchResults, ...batchResults];
         applySearchFilters();
 
-        if (currentPage < totalPagesAvailable) {
+        if (currentPage < totalPagesAvailable || batchResults.length >= 10) {
           document.getElementById("loadMoreSection").style.display = "flex";
         } else {
           document.getElementById("loadMoreSection").style.display = "none";
@@ -811,7 +813,7 @@
       let director = "N/A";
 
       try {
-        const tmdbRes = await fetch(`https://api.themoviedb.org/3/${type.toLowerCase() === "series" ? "tv" : "movie"}/${id}?api_key=${TMDB_API_KEY}`);
+        const tmdbRes = await fetch(`https://api.themoviedb.org/3/${type.toLowerCase() === "series" || type.toLowerCase() === "tv" ? "tv" : "movie"}/${id}?api_key=${TMDB_API_KEY}`);
         const tmdbDetails = await tmdbRes.json();
 
         if (tmdbDetails && tmdbDetails.overview) {
@@ -843,7 +845,7 @@
         actionGroup.innerHTML = `<button class="btn-primary" onclick="addCurrentToLibrary()">+ Add to My Library</button>`;
       }
 
-      fetchRecommendations(genre, title);
+      fetchRecommendations(genre, title, id, type);
     }
 
     function openHomeMediaDetail(index) {
@@ -854,7 +856,7 @@
 
       displayDetailOverlay();
       renderHomeActionGroup(index);
-      fetchRecommendations(item.genre || "Movie", item.title);
+      fetchRecommendations(item.genre || "Movie", item.title, item.id, item.type);
     }
 
     function displayDetailOverlay() {
@@ -910,46 +912,69 @@
       document.getElementById("movieInput").value = "";
     }
 
-    /* Dynamic Shuffled Recommendations */
-    async function fetchRecommendations(genre, currentTitle) {
+    /* DIRECT TMDB SIMILAR & RECOMMENDATION ENGINE */
+    async function fetchRecommendations(genre, currentTitle, id, type) {
       const recRow = document.getElementById("recommendationsRow");
       recRow.innerHTML = "<div style='color: var(--text-muted); font-size: 0.8rem;'>Loading suggestions...</div>";
 
-      const queryKeyword = (genre && genre !== "Entertainment" && genre !== "N/A") ? genre : currentTitle.split(" ")[0];
+      let results = [];
 
-      try {
-        const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(queryKeyword)}`);
-        const data = await res.json();
-
-        if (data && data.results && data.results.length > 0) {
-          recRow.innerHTML = "";
-          
-          let candidates = data.results.filter(m => (m.title || m.name) !== currentTitle && m.poster_path);
-          
-          for (let i = candidates.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
+      // 1. Try fetching TMDB Recommendations by ID directly
+      if (id && !isNaN(id)) {
+        try {
+          const mediaType = (type && type.toLowerCase().includes("series")) ? "tv" : "movie";
+          const simRes = await fetch(`https://api.themoviedb.org/3/${mediaType}/${id}/recommendations?api_key=${TMDB_API_KEY}`);
+          const simData = await simRes.json();
+          if (simData && simData.results && simData.results.length > 0) {
+            results = simData.results;
           }
+        } catch (e) {}
+      }
 
-          candidates.slice(0, 6).forEach(m => {
-            const recCard = document.createElement("div");
-            recCard.className = "rec-card";
-            const titleStr = m.title || m.name;
-            const posterUrl = `https://image.tmdb.org/t/p/w500${m.poster_path}`;
-            const yearStr = (m.release_date || m.first_air_date || "2024").substring(0, 4);
+      // 2. Fallback to title keyword search if ID recommendations returned empty
+      if (results.length === 0) {
+        try {
+          const cleanKeyword = currentTitle.split(/[:\-\s]/)[0];
+          const searchRes = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(cleanKeyword)}`);
+          const searchData = await searchRes.json();
+          if (searchData && searchData.results && searchData.results.length > 0) {
+            results = searchData.results;
+          }
+        } catch (e) {}
+      }
 
-            recCard.onclick = () => openSearchMediaDetail(m.id.toString(), titleStr, posterUrl, yearStr, m.media_type);
-            recCard.innerHTML = `
-              <img src="${posterUrl}" alt="${titleStr}">
-              <div class="rec-title">${titleStr}</div>
-            `;
-            recRow.appendChild(recCard);
-          });
-        } else {
-          recRow.innerHTML = "<div style='color: var(--text-muted); font-size: 0.8rem;'>No suggestions found.</div>";
+      // Filter candidates with valid posters and exclude exact title match
+      let candidates = results.filter(m => {
+        const mTitle = m.title || m.name || "";
+        return mTitle.toLowerCase() !== currentTitle.toLowerCase() && m.poster_path;
+      });
+
+      if (candidates.length > 0) {
+        recRow.innerHTML = "";
+        
+        // Random Shuffle
+        for (let i = candidates.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
         }
-      } catch (e) {
-        recRow.innerHTML = "<div style='color: var(--text-muted); font-size: 0.8rem;'>Unable to load suggestions.</div>";
+
+        candidates.slice(0, 8).forEach(m => {
+          const recCard = document.createElement("div");
+          recCard.className = "rec-card";
+          const titleStr = m.title || m.name;
+          const posterUrl = `https://image.tmdb.org/t/p/w500${m.poster_path}`;
+          const yearStr = (m.release_date || m.first_air_date || "2024").substring(0, 4);
+          const mType = m.media_type || (m.first_air_date ? "series" : "movie");
+
+          recCard.onclick = () => openSearchMediaDetail(m.id.toString(), titleStr, posterUrl, yearStr, mType);
+          recCard.innerHTML = `
+            <img src="${posterUrl}" alt="${titleStr}">
+            <div class="rec-title">${titleStr}</div>
+          `;
+          recRow.appendChild(recCard);
+        });
+      } else {
+        recRow.innerHTML = "<div style='color: var(--text-muted); font-size: 0.8rem;'>No suggestions found.</div>";
       }
     }
 
